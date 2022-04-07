@@ -23,13 +23,14 @@ from utils.plot_setting import *
 
 METNoMu_avai = True
 B_info = True
-doSignal = True
-doBackground = True
-#fndir_plot = 'root://cmseos.fnal.gov//store/user/ali/MLTreeV43keeptkMETm/MLTreeV43keeptkMETm/'
-fndir_plot = '/uscms/home/ali/nobackup/LLP/crabdir/MLTreeULV3_keeptkMETm/'
-#fndir_plot = 'root://cmseos.fnal.gov//store/user/ali/MLTreeULV1_keeptkMETm/MLTreeULV1_keeptkMETm/'
-m_path = './model_1112/'
-save_plot_path='./UL1112_highMET_ntk/'
+doSignal = False
+doBackground = False
+doData = True
+#fndir_plot = '/uscms/home/ali/nobackup/LLP/crabdir/MLTreeULV5_keeptkMETm/'
+fndir_plot = '/uscms/home/ali/nobackup/LLP/crabdir/MLTreeULV11METm/'
+#m_path = './model_1119_ntk_1/'
+m_path = './model_0406_ntk_ULV11_3/'
+save_plot_path='./UL0406_ULV11_ntk_3_1/'
 if not os.path.exists(save_plot_path):
       os.makedirs(save_plot_path)
 
@@ -40,12 +41,16 @@ variables = ['evt', 'weight', 'met_pt', 'met_phi', 'nsv',
              'tk_pt', 'tk_eta', 'tk_phi', 
              'tk_dxybs', 'tk_dxybs_sig', 'tk_dxybs_err', 'tk_dz', 'tk_dz_sig', 'tk_dz_err', 
              'vtx_ntk', 'vtx_dBV', 'vtx_dBVerr', 'vtx_mass_track', 'vtx_mass_jet', 'vtx_mass_trackjet',
-             'vtx_tk_pt', 'vtx_tk_eta', 'vtx_tk_phi', 
+             'vtx_njets', 'vtx_nbjets_loose', 'vtx_nbjets_medium', 'vtx_nbjets_tight',
+             'vtx_nbtks_loose', 'vtx_nbtks_medium', 'vtx_nbtks_tight',
+             'vtx_tk_pt', 'vtx_tk_eta', 'vtx_tk_phi',
              'vtx_tk_dxy', 'vtx_tk_dxy_err', 'vtx_tk_nsigmadxy', 'vtx_tk_dz', 'vtx_tk_dz_err', 'vtx_tk_nsigmadz']
 vars_plot = [
   'weight','met_pt','met_phi','nsv','MLScore',
   'jet_pt', 'jet_eta', 'jet_phi',
   'vtx_ntk','vtx_dBV','vtx_dBVerr', 'vtx_mass_track', 'vtx_mass_jet', 'vtx_mass_trackjet',
+  'vtx_njets', 'vtx_nbjets_loose', 'vtx_nbjets_medium', 'vtx_nbjets_tight',
+  'vtx_nbtks_loose', 'vtx_nbtks_medium', 'vtx_nbtks_tight',
   'tk_pt', 'tk_eta', 'tk_phi', 'tk_dxybs', 'tk_dxybs_sig', 'tk_dxybs_err', 'tk_dz', 'tk_dz_sig', 'tk_dz_err',
   'vtx_tk_pt','vtx_tk_eta','vtx_tk_phi', 'vtx_tk_dxy', 'vtx_tk_dxy_err', 'vtx_tk_nsigmadxy', 'vtx_tk_dz', 'vtx_tk_dz_err', 'vtx_tk_nsigmadz',
             ]
@@ -70,10 +75,8 @@ def GetData(fns, variables, cut=""):
           continue
         phys = f.arrays(variables, namedecode="utf-8")
         del f
-        #evt_select = (phys['met_pt']>=80) & (phys['met_pt']<150) & (phys['vtx_ntk']>0) & (phys['vtx_dBVerr']<0.0025) & (phys['n_gen_bquarks']==0)
-        #evt_select = (phys['vtx_ntk']>0) & (phys['vtx_dBVerr']<0.0050) & (phys['metnomu_pt']>=200)
         evt_select = (phys['vtx_ntk']>0) & (phys['metnomu_pt']>=200) & (phys['vtx_dBVerr']<0.0025)
-        #evt_select = (phys['vtx_ntk']>0) & (phys['vtx_dBVerr']<0.0025) & (phys['nbtag_jet']>0)
+        #evt_select = (phys['vtx_ntk']>0) & (phys['metnomu_pt']>=100) & (phys['metnomu_pt']<200) & (phys['vtx_dBVerr']<0.0025)
         for v in phys:
           phys[v] = np.array(phys[v][evt_select])
         if len(phys['evt'])==0:
@@ -168,8 +171,8 @@ def plotcategory(f,dirname,vars_name,data,weight):
     dbverr_ML.Write()
     return
 
-def MLoutput(signals, sig_fns, backgrounds, bkg_fns):
-    weights = GetNormWeight(bkg_fns, fndir_plot, int_lumi=41521.0)
+def MLoutput(signals, sig_fns, backgrounds, bkg_fns, isData):
+    weights = GetNormWeight(bkg_fns, fndir_plot, isData,int_lumi=40610.0)
     MLoutput_bkg = []
     w_bkg = []
     for i in range(len(bkg_fns)):
@@ -193,7 +196,7 @@ def MLoutput(signals, sig_fns, backgrounds, bkg_fns):
     #return compare
 
 
-def getPlotData(phys_vars, vars_name, idx, fns):
+def getPlotData(phys_vars, vars_name, idx, fns, isData):
     '''
     this function produced 1d arrays with weights for pyplot hist
     used for combine different source of background samples with different weight (can be event level)
@@ -203,7 +206,7 @@ def getPlotData(phys_vars, vars_name, idx, fns):
     fns: root filenames of all those samples 
     '''
 
-    weights = GetNormWeight(fns, fndir_plot, int_lumi=41521.0)
+    weights = GetNormWeight(fns, fndir_plot, isData, int_lumi=40610.0)
     plot_w = {}
     plot_data = {}
 
@@ -277,7 +280,7 @@ def getPlotData(phys_vars, vars_name, idx, fns):
     
     return plot_data, plot_w
 
-def makeplotfile(fns,newfn,isSignal,MLscore_threshold_high=0.4,MLscore_threshold_low=0.4):
+def makeplotfile(fns,newfn,isSignal,isData,MLscore_threshold_high=0.4,MLscore_threshold_low=0.4):
     print("ML cut high: {}  ---  ML cut low: {}".format(MLscore_threshold_high, MLscore_threshold_low))
     fnew = ROOT.TFile(save_plot_path+newfn+".root","RECREATE")
     #MLscore_threshold = 0.4
@@ -315,9 +318,9 @@ def makeplotfile(fns,newfn,isSignal,MLscore_threshold_high=0.4,MLscore_threshold
         ntk_idx['4trk'].append(np.reshape(ntk_4, len(ntk_5)))
         ntk_idx['5trk'].append(np.reshape(ntk_5, len(ntk_5)))
 
-    data_highML, weight_highML = getPlotData(phys_vars, vars_plot, idx_highML, fns)
-    data_lowML, weight_lowML = getPlotData(phys_vars, vars_plot, idx_lowML, fns)
-    data_all, weight_all = getPlotData(phys_vars, vars_plot, idx_all, fns)
+    data_highML, weight_highML = getPlotData(phys_vars, vars_plot, idx_highML, fns, isData)
+    data_lowML, weight_lowML = getPlotData(phys_vars, vars_plot, idx_lowML, fns, isData)
+    data_all, weight_all = getPlotData(phys_vars, vars_plot, idx_all, fns, isData)
     plotcategory(fnew,"highML_inclusive",vars_plot,data_highML,weight_highML)
     plotcategory(fnew,"lowML_inclusive",vars_plot,data_lowML,weight_lowML)
     plotcategory(fnew,"allML_inclusive",vars_plot,data_all,weight_all)
@@ -330,9 +333,9 @@ def makeplotfile(fns,newfn,isSignal,MLscore_threshold_high=0.4,MLscore_threshold
         pick_idx_incl.append(ntk_idx[intk][iidx])
         pick_idx_high.append(idx_highML[iidx] & ntk_idx[intk][iidx])
         pick_idx_low.append(idx_lowML[iidx] & ntk_idx[intk][iidx])
-      data_ntk_incl, weight_ntk_incl = getPlotData(phys_vars, vars_plot, pick_idx_incl, fns)
-      data_highML, weight_highML = getPlotData(phys_vars, vars_plot, pick_idx_high, fns)
-      data_lowML, weight_lowML = getPlotData(phys_vars, vars_plot, pick_idx_low, fns)
+      data_ntk_incl, weight_ntk_incl = getPlotData(phys_vars, vars_plot, pick_idx_incl, fns, isData)
+      data_highML, weight_highML = getPlotData(phys_vars, vars_plot, pick_idx_high, fns, isData)
+      data_lowML, weight_lowML = getPlotData(phys_vars, vars_plot, pick_idx_low, fns, isData)
       plotcategory(fnew,"inclusive_"+intk,vars_plot,data_ntk_incl,weight_ntk_incl)
       plotcategory(fnew,"highML_"+intk,vars_plot,data_highML,weight_highML)
       plotcategory(fnew,"lowML_"+intk,vars_plot,data_lowML,weight_lowML)
@@ -340,7 +343,7 @@ def makeplotfile(fns,newfn,isSignal,MLscore_threshold_high=0.4,MLscore_threshold
     fnew.Close()
 
     # print number of events in each region
-    weights = GetNormWeight(fns, fndir_plot, int_lumi=40610.0)
+    weights = GetNormWeight(fns, fndir_plot, isData, int_lumi=40610.0)
     cut_var = 'vtx_ntk'
     cut_val_high = 5
     cut_val_val = 4
@@ -366,9 +369,10 @@ def makeplotfile(fns,newfn,isSignal,MLscore_threshold_high=0.4,MLscore_threshold
             nevt_variance_region = nevt_region*weights[i]
             total_sum[iregion] += nevt_region
             total_var[iregion] += nevt_variance_region
-            print("sample {} in region {} : {} +- {} raw: {}".format(fns[i],region_names[iregion],nevt_region,np.sqrt(nevt_variance_region),nevt_raw))
+            if not isData:
+              print("sample {} in region {} : {} +- {} raw: {}".format(fns[i],region_names[iregion],nevt_region,np.sqrt(nevt_variance_region),nevt_raw))
             
-    if not isSignal:
+    if not(isData or isSignal):
       print("Summing together: ")
       for iregion in range(len(region_names)):
           print("Region {}: {} +- {}".format(region_names[iregion],total_sum[iregion],np.sqrt(total_var[iregion])))
@@ -377,61 +381,78 @@ def makeplotfile(fns,newfn,isSignal,MLscore_threshold_high=0.4,MLscore_threshold
 
 def main():
     fns = [
-      #'qcdht0200_2017',
-      #'qcdht0300_2017',
-      'qcdht0500sum_2017',
-      'qcdht0700_2017', 
-      'qcdht1000_2017', 
-      'qcdht1500_2017', 
-      'qcdht2000_2017', 
-      'wjetstolnu_2017',
-      'zjetstonunuht0100_2017', 
-      'zjetstonunuht0200_2017', 
-      'zjetstonunuht0400_2017', 
-      'zjetstonunuht0600_2017', 
-      'zjetstonunuht0800_2017', 
-      'zjetstonunuht1200_2017', 
-      'zjetstonunuht2500_2017', 
-      'ttbar_2017',
-      #'ttbarht0600_2017',
-      #'ttbarht0800_2017',
-      #'ttbarht1200_2017',
-      #'ttbarht2500_2017',
+      #"qcdht0100_2017",
+      #"qcdht0200_2017",
+      #"qcdht0300_2017",
+      "qcdht0500_2017",
+      "qcdht0700_2017",
+      "qcdht1000_2017",
+      "qcdht1500_2017",
+      "qcdht2000_2017",
+      "wjetstolnuht0100_2017",
+      "wjetstolnuht0200_2017",
+      "wjetstolnuht0400_2017",
+      "wjetstolnuht0600_2017",
+      "wjetstolnuht0800_2017",
+      "wjetstolnuht1200_2017",
+      "wjetstolnuht2500_2017",
+      #"zjetstonunuht0100_2017",
+      "zjetstonunuht0200_2017",
+      "zjetstonunuht0400_2017",
+      "zjetstonunuht0600_2017",
+      "zjetstonunuht0800_2017",
+      "zjetstonunuht1200_2017",
+      "zjetstonunuht2500_2017",
+      "ww_2017",
+      "wz_2017",
+      "zz_2017",
+      "st_tchan_antitop_2017",
+      "st_tchan_top_2017",
+      "st_tw_antitop_2017",
+      "st_tw_top_2017",
+      "ttbar_2017",
     ]
     if doBackground:
       #makeplotfile(fns,"background_METtrigger",False)
-      makeplotfile(fns,"background_METtrigger",False,0.4,0.4)
-      #makeplotfile(fns,"background_METtrigger_ML200_MLcut03",False,0.4,0.3)
-      #makeplotfile(fns,"background_METtrigger_ML200_MLcut05",False,0.4,0.5)
-      #makeplotfile(fns,"background_lowMET_nobquark",False)
-      #makeplotfile(fns,"ttbarHT_highMET",False)
+      makeplotfile(fns,"background_METtrigger",False,False,0.4,0.4)
       #for bkg_fn in fns:
       #  makeplotfile([bkg_fn],bkg_fn+"_lowMET_bquark",False)
 
     sig_fns = ['mfv_splitSUSY_tau000000100um_M2000_1800_2017',
+               'mfv_splitSUSY_tau000000100um_M2000_1900_2017',
                'mfv_splitSUSY_tau000000100um_M2400_2300_2017',
                'mfv_splitSUSY_tau000000300um_M2000_1800_2017',
+               'mfv_splitSUSY_tau000000300um_M2000_1900_2017',
                'mfv_splitSUSY_tau000000300um_M2400_2300_2017',
                'mfv_splitSUSY_tau000001000um_M2000_1800_2017',
+               'mfv_splitSUSY_tau000001000um_M2000_1900_2017',
                'mfv_splitSUSY_tau000001000um_M2400_2300_2017',
                'mfv_splitSUSY_tau000001000um_M1200_1100_2017',
                'mfv_splitSUSY_tau000001000um_M1400_1200_2017',
                'mfv_splitSUSY_tau000010000um_M2000_1800_2017',
+               'mfv_splitSUSY_tau000010000um_M2000_1900_2017',
                'mfv_splitSUSY_tau000010000um_M2400_2300_2017',
                'mfv_splitSUSY_tau000010000um_M1200_1100_2017',
                'mfv_splitSUSY_tau000010000um_M1400_1200_2017',
+               'mfv_splitSUSY_tau000100000um_M2000_1800_2017',
+               'mfv_splitSUSY_tau000100000um_M2000_1900_2017',
+               #'mfv_splitSUSY_tau001000000um_M2000_1800_2017',
+               #'mfv_splitSUSY_tau001000000um_M2000_1900_2017',
+               #'mfv_splitSUSY_tau010000000um_M2000_1800_2017',
+               #'mfv_splitSUSY_tau010000000um_M2000_1900_2017',
               ]
     if doSignal:
       for sig_fn in sig_fns:
-        makeplotfile([sig_fn],sig_fn+"_METtrigger",True,0.4,0.4)
-        #makeplotfile([sig_fn],sig_fn+"_METtrigger_MLcut03",True,0.4,0.3)
-        #makeplotfile([sig_fn],sig_fn+"_METtrigger_MLcut05",True,0.4,0.5)
-        #makeplotfile([sig_fn],sig_fn+"_lowMET_bquark",True)
-        #makeplotfile([sig_fn],sig_fn+"_highMET",True)
-
-
-# In[6]:
-
+        makeplotfile([sig_fn],sig_fn+"_METtrigger",True,False,0.4,0.4)
+    fns_data = [
+      'MET2017B',
+      'MET2017C',
+      'MET2017D',
+      'MET2017E',
+      'MET2017F',
+    ]
+    if doData:
+      makeplotfile(fns_data,"data_METtrigger",False,True,0.4,0.4)
 
 main()
 

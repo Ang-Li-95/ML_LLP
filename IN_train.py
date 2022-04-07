@@ -21,7 +21,7 @@ from utils.utilities import *
 if not os.path.exists(dir_model):
       os.makedirs(dir_model)
 
-def distance_corr(var_1, var_2, normedweight, power=1):
+def distance_corr(var_1, var_2, normedweight, power=2):
     """var_1: First variable to decorrelate (eg mass)
     var_2: Second variable to decorrelate (eg classifier output)
     normedweight: Per-example weight. Sum of weights should add up to N (where N is the number of examples)
@@ -326,9 +326,9 @@ for i in range(num_epochs):
           batch_Rs = Rs_train
           batch_Ra = Ra_train
 
-        #batch_weight = (batch_label-1)*(-1)
-        #batch_weight[batch_weight==0] = 1e-08
-        batch_weight = np.ones(batch_label.shape)
+        batch_weight = (batch_label-1)*(-1)
+        batch_weight[batch_weight==0] = 1e-08
+        #batch_weight = np.ones(batch_label.shape)
 
         #if i<num_epochs_tk:
         #  l_train,_,bce_train,dcorr_ntk_train=sess.run([loss_tk,trainer_tk,loss_bce_tk,dcorr_tk],feed_dict={O:batch_tk,Rr:batch_Rr,Rs:batch_Rs,Ra:batch_Ra,vtx:batch_vtx,label:batch_label,ntk_max:batch_ntk,evtweight:batch_weight})
@@ -372,9 +372,9 @@ for i in range(num_epochs):
           batch_Rr = Rr_val
           batch_Rs = Rs_val
           batch_Ra = Ra_val
-        #batch_weight = (batch_label-1)*(-1)
-        #batch_weight[batch_weight==0] = 1e-08
-        batch_weight = np.ones(batch_label.shape)
+        batch_weight = (batch_label-1)*(-1)
+        batch_weight[batch_weight==0] = 1e-08
+        #batch_weight = np.ones(batch_label.shape)
 
         #if i<num_epochs_tk:
         #  l_val,_,bce_val,dcorr_ntk_val=sess.run([loss_tk,out_tkonly_sigmoid,loss_bce_tk,dcorr_tk],feed_dict={O:batch_tk,Rr:batch_Rr,Rs:batch_Rs,Ra:batch_Ra,vtx:batch_vtx,label:batch_label,ntk_max:batch_ntk,evtweight:batch_weight})
@@ -452,9 +452,9 @@ with tf.Session() as newsess:
           batch_Rs = Rs_test
           batch_Ra = Ra_test
 
-        #batch_weight = (batch_label-1)*(-1)
-        #batch_weight[batch_weight==0] = 1e-08
-        batch_weight = np.ones(batch_label.shape)
+        batch_weight = (batch_label-1)*(-1)
+        batch_weight[batch_weight==0] = 1e-08
+        #batch_weight = np.ones(batch_label.shape)
 
         b = newsess.run(['INscore:0'],feed_dict={'O:0':batch_tk,'Rr:0':batch_Rr,'Rs:0':batch_Rs,'Ra:0':batch_Ra})
         pred.append(b[0])

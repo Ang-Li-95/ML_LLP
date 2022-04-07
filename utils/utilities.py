@@ -14,28 +14,36 @@ from utils.parameterSet import *
 normalize_factors_tk = []
 normalize_factors_vtx = []
 fns_xsec_UL = {
-    "qcdht0200_2017": 1.547e+06,
-    "qcdht0300_2017": 3.226E+05,
-    "qcdht0500sum_2017": 2.998E+04,
-    "qcdht0700_2017": 6.351E+03,
-    "qcdht1000_2017": 1.096E+03,
-    "qcdht1500_2017": 99.0,
-    "qcdht2000_2017": 20.2,
-    #"wjetstolnusum_2017": 5.28E+04,
-    "wjetstolnu_2017": 5.28E+04,
-    #"wjetstolnuext_2017": 5.28E+04,
-    "zjetstonunuht0100_2017": 302.8,
-    "zjetstonunuht0200_2017": 92.59,
-    "zjetstonunuht0400_2017": 13.18,
-    "zjetstonunuht0600_2017": 3.257,
-    "zjetstonunuht0800_2017": 1.49,
-    "zjetstonunuht1200_2017": 0.3419,
-    "zjetstonunuht2500_2017": 0.005146,
-    "ttbar_2017": 832,
-    "ttbarht0600_2017": 1.821,
-    "ttbarht0800_2017": 0.7532,
-    "ttbarht1200_2017": 0.1316,
-    "ttbarht2500_2017": 0.001407,
+    "qcdht0100_2017": 2.366e+07,
+    "qcdht0200_2017": 1.550e+06,
+    "qcdht0300_2017": 3.245e+05,
+    "qcdht0500_2017": 3.032e+04,
+    "qcdht0700_2017": 6.430e+03,
+    "qcdht1000_2017": 1.118e+03,
+    "qcdht1500_2017": 1.080e+02,
+    "qcdht2000_2017": 2.201e+01,
+    "wjetstolnuht0100_2017": 1.255e+03,
+    "wjetstolnuht0200_2017": 3.364e+02,
+    "wjetstolnuht0400_2017": 4.526e+01,
+    "wjetstolnuht0600_2017": 1.099e+01,
+    "wjetstolnuht0800_2017": 4.924,
+    "wjetstolnuht1200_2017": 1.157,
+    "wjetstolnuht2500_2017": 2.623e-02,
+    "zjetstonunuht0100_2017": 2.659e+02,
+    "zjetstonunuht0200_2017": 7.297e+01,
+    "zjetstonunuht0400_2017": 9.917,
+    "zjetstonunuht0600_2017": 2.410,
+    "zjetstonunuht0800_2017": 1.080,
+    "zjetstonunuht1200_2017": 2.521e-01,
+    "zjetstonunuht2500_2017": 5.633e-03,
+    "ww_2017": 7.587e+01,
+    "wz_2017": 2.756e+01,
+    "zz_2017": 1.214e+01,
+    "ttbar_2017": 7.572e+02,
+    "st_tchan_antitop_2017": 6.793e+01,
+    "st_tchan_top_2017": 1.134e+02,
+    "st_tw_antitop_2017": 3.251e+01,
+    "st_tw_top_2017": 3.245e+01,
     "mfv_splitSUSY_tau000000100um_M2000_1800_2017": 1e-03,
     "mfv_splitSUSY_tau000000100um_M2000_1900_2017": 1e-03,
     'mfv_splitSUSY_tau000000100um_M2400_2300_2017': 1e-03,
@@ -52,6 +60,12 @@ fns_xsec_UL = {
     'mfv_splitSUSY_tau000010000um_M2400_2300_2017': 1e-03,
     'mfv_splitSUSY_tau000010000um_M1200_1100_2017': 1e-03,
     'mfv_splitSUSY_tau000010000um_M1400_1200_2017': 1e-03,
+    'mfv_splitSUSY_tau000100000um_M2000_1800_2017': 1e-03,
+    'mfv_splitSUSY_tau000100000um_M2000_1900_2017': 1e-03,
+    'mfv_splitSUSY_tau001000000um_M2000_1800_2017': 1e-03,
+    'mfv_splitSUSY_tau001000000um_M2000_1900_2017': 1e-03,
+    'mfv_splitSUSY_tau010000000um_M2000_1800_2017': 1e-03,
+    'mfv_splitSUSY_tau010000000um_M2000_1900_2017': 1e-03,
 }
 
 fns_xsec_EOY = {
@@ -115,7 +129,9 @@ def GetXsecList(fns):
         xsecs.append(fns_xsec[fn])
     return xsecs
 
-def GetNormWeight(fns, fn_dir, int_lumi=1):
+def GetNormWeight(fns, fn_dir, isData, int_lumi=1):
+    if isData:
+      return [1]*len(fns)
     xsecs = GetXsecList(fns)
     nevents = GetNevtsList(fns, fn_dir)
     assert(len(xsecs)==len(nevents))
@@ -147,7 +163,7 @@ def GetLoadFactor(fn,f,lumi):
     xsec = GetXsec(fn)
     return xsec*lumi/nevt
 
-def GetDataAndLabel(fns, split, isSignal, cut="", lumi=100000):
+def GetDataAndLabel(fns, split, isSignal, cut="", lumi=200000):
     tk_train = []
     tk_val = []
     tk_test = []
@@ -165,7 +181,7 @@ def GetDataAndLabel(fns, split, isSignal, cut="", lumi=100000):
         variables = ['tk_pt', 'tk_eta', 'tk_phi', 'tk_dxybs','tk_dxybs_sig','tk_dz','tk_dz_sig','met_pt','vtx_ntk', 'vtx_dBV', 'vtx_dBVerr', 'metnomu_pt']
         matrix = f.arrays(variables, namedecode="utf-8")
         # apply cuts
-        evt_select = (matrix['metnomu_pt']>100) & (matrix['metnomu_pt']<200) & (matrix['vtx_ntk']>2) & (matrix['vtx_dBVerr']<0.0025)
+        evt_select = (matrix['metnomu_pt']>80) & (matrix['metnomu_pt']<=200) & (matrix['vtx_ntk']>2) & (matrix['vtx_dBVerr']<0.0025)
         for v in matrix:
           matrix[v] = matrix[v][evt_select]
         if len(matrix['met_pt'])==0:
