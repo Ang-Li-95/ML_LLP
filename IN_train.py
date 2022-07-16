@@ -18,6 +18,8 @@ import awkward as ak
 from utils.parameterSet import *
 from utils.utilities import *
 
+year="2017"
+
 if not os.path.exists(dir_model):
       os.makedirs(dir_model)
 
@@ -221,7 +223,7 @@ def phi_vtx(T, vtx):
     h3 = tf.reshape(h3, [-1,1])
     return h3
 
-train, val, test, pos_weight = importData([0.7,0.15,0.15], True, True)
+train, val, test, pos_weight = importData([0.7,0.15,0.15], year, True, True, True)
 
 #def train():
 

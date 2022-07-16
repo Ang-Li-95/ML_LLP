@@ -23,14 +23,27 @@ from utils.plot_setting import *
 
 METNoMu_avai = True
 B_info = True
-doSignal = False
+doSignal = True
 doBackground = False
-doData = True
-#fndir_plot = '/uscms/home/ali/nobackup/LLP/crabdir/MLTreeULV5_keeptkMETm/'
-fndir_plot = '/uscms/home/ali/nobackup/LLP/crabdir/MLTreeULV11METm/'
+doData = False
+TrackMover = False
+#assert(not (doData and (doBackground or doSignal)))
+year = "2017"
+int_lumi = 59683.0 if year=="2018" else 40610.0 if year=="2017" else 19664.0 if year=="20161" else 16978.0 if year=="20162" else 0.0
+fndir_plot = '/uscms/home/ali/nobackup/LLP/crabdir/MLTreeULV13METm/'
+#fndir_plot = '/uscms/home/ali/nobackup/LLP/crabdir/MLTree_prefiringweight_ULV13METm/'
+#fndir_plot = '/uscms/home/ali/nobackup/LLP/crabdir/MLTree_loosedBVerr_ULV11METm/'
+#fndir_plot = '/uscms/home/ali/nobackup/LLP/crabdir/MLTree_nofakeMETveto_ULV11METm/'
+#fndir_plot = '/uscms/home/ali/nobackup/LLP/crabdir/MLTree_fakeMETveto_ULV11_20161METm/'
+#fndir_plot = '/uscms/home/ali/nobackup/LLP/crabdir/MLTreeULV12_nstl6_20162METm/'
+#fndir_plot = '/uscms/home/ali/nobackup/LLP/crabdir/MLTree_loosedBVerr_ULV11_2018METm/'
+#fndir_plot = '/uscms/home/ali/nobackup/LLP/crabdir/MLTree_tightbtkw_ULV11METm/'
+if TrackMover:
+  fndir_plot = '/uscms/home/ali/nobackup/LLP/CornellCode/mfv_10_6_29/src/JMTucker/MFVNeutralino/test/TrackMover/TestRun/'
 #m_path = './model_1119_ntk_1/'
-m_path = './model_0406_ntk_ULV11_3/'
-save_plot_path='./UL0406_ULV11_ntk_3_1/'
+m_path = './model_0407_ntk_ULV11_2/'
+#m_path = './model_0503_ntk_ULV11_nofakeMETveto_8/'
+save_plot_path='./UL0407_ULV11_ntk_2_RunII/'
 if not os.path.exists(save_plot_path):
       os.makedirs(save_plot_path)
 
@@ -61,7 +74,7 @@ if B_info:
   variables += ['nbtag_jet', 'n_gen_bquarks', 'jet_ntrack', 'jet_btag', 'jet_flavor', 'gen_bquarks_pt', 'gen_bquarks_eta', 'gen_bquarks_phi']
   vars_plot += ['nbtag_jet', 'n_gen_bquarks', 'jet_ntrack', 'jet_btag', 'jet_flavor', 'gen_bquarks_pt', 'gen_bquarks_eta', 'gen_bquarks_phi']
 
-def GetData(fns, variables, cut=""):
+def GetData(fns, variables, isMC, cut=""):
     ML_inputs_tk = []
     ML_inputs_vtx = []
     phys_variables = []
@@ -69,13 +82,16 @@ def GetData(fns, variables, cut=""):
         #print(fn)
         print("opening {}...".format(fndir_plot+fn+'.root'))
         f = uproot.open(fndir_plot+fn+'.root')
-        f = f["mfvJetTreer/tree_DV"]
+        if TrackMover:
+          f = f["tree_DV"]
+        else:
+          f = f["mfvJetTreer/tree_DV"]
         if len(f['evt'].array())==0:
           print( "no events!!!")
           continue
         phys = f.arrays(variables, namedecode="utf-8")
         del f
-        evt_select = (phys['vtx_ntk']>0) & (phys['metnomu_pt']>=200) & (phys['vtx_dBVerr']<0.0025)
+        evt_select = (phys['vtx_ntk']>0) & (phys['metnomu_pt']>=200) & (phys['vtx_dBVerr']<0.0025)  #dBVerr cut was 0.0025
         #evt_select = (phys['vtx_ntk']>0) & (phys['metnomu_pt']>=100) & (phys['metnomu_pt']<200) & (phys['vtx_dBVerr']<0.0025)
         for v in phys:
           phys[v] = np.array(phys[v][evt_select])
@@ -85,8 +101,8 @@ def GetData(fns, variables, cut=""):
         m_tk = np.array([phys[v] for v in mlvar_tk])
         m_vtx = np.array([phys[v] for v in mlvar_vtx]).T
         m_tk = zeropadding(m_tk, No)
-        m_tk = normalizedata(m_tk)
-        m_vtx = normalizedata(m_vtx)
+        m_tk = normalizedata(m_tk, year, isMC)
+        m_vtx = normalizedata(m_vtx, year, isMC)
         ML_inputs_tk.append(m_tk)
         ML_inputs_vtx.append(m_vtx)
         phys_variables.append(phys)
@@ -172,7 +188,7 @@ def plotcategory(f,dirname,vars_name,data,weight):
     return
 
 def MLoutput(signals, sig_fns, backgrounds, bkg_fns, isData):
-    weights = GetNormWeight(bkg_fns, fndir_plot, isData,int_lumi=40610.0)
+    weights = GetNormWeight(bkg_fns, fndir_plot, isData,int_lumi=int_lumi)
     MLoutput_bkg = []
     w_bkg = []
     for i in range(len(bkg_fns)):
@@ -206,7 +222,7 @@ def getPlotData(phys_vars, vars_name, idx, fns, isData):
     fns: root filenames of all those samples 
     '''
 
-    weights = GetNormWeight(fns, fndir_plot, isData, int_lumi=40610.0)
+    weights = GetNormWeight(fns, fndir_plot, isData, int_lumi=int_lumi)
     plot_w = {}
     plot_data = {}
 
@@ -286,7 +302,7 @@ def makeplotfile(fns,newfn,isSignal,isData,MLscore_threshold_high=0.4,MLscore_th
     #MLscore_threshold = 0.4
     #MLscore_threshold_high = 0.4
     #MLscore_threshold_low = 0.3
-    ML_inputs_tk, ML_inputs_vtx, phys_vars = GetData(fns, variables)
+    ML_inputs_tk, ML_inputs_vtx, phys_vars = GetData(fns, variables, not isData)
     assert(len(fns)==len(ML_inputs_tk))
     assert(len(fns)==len(ML_inputs_vtx))
     assert(len(fns)==len(phys_vars))
@@ -343,7 +359,7 @@ def makeplotfile(fns,newfn,isSignal,isData,MLscore_threshold_high=0.4,MLscore_th
     fnew.Close()
 
     # print number of events in each region
-    weights = GetNormWeight(fns, fndir_plot, isData, int_lumi=40610.0)
+    weights = GetNormWeight(fns, fndir_plot, isData, int_lumi=int_lumi)
     cut_var = 'vtx_ntk'
     cut_val_high = 5
     cut_val_val = 4
@@ -381,78 +397,118 @@ def makeplotfile(fns,newfn,isSignal,isData,MLscore_threshold_high=0.4,MLscore_th
 
 def main():
     fns = [
-      #"qcdht0100_2017",
-      #"qcdht0200_2017",
-      #"qcdht0300_2017",
-      "qcdht0500_2017",
-      "qcdht0700_2017",
-      "qcdht1000_2017",
-      "qcdht1500_2017",
-      "qcdht2000_2017",
-      "wjetstolnuht0100_2017",
-      "wjetstolnuht0200_2017",
-      "wjetstolnuht0400_2017",
-      "wjetstolnuht0600_2017",
-      "wjetstolnuht0800_2017",
-      "wjetstolnuht1200_2017",
-      "wjetstolnuht2500_2017",
-      #"zjetstonunuht0100_2017",
-      "zjetstonunuht0200_2017",
-      "zjetstonunuht0400_2017",
-      "zjetstonunuht0600_2017",
-      "zjetstonunuht0800_2017",
-      "zjetstonunuht1200_2017",
-      "zjetstonunuht2500_2017",
-      "ww_2017",
-      "wz_2017",
-      "zz_2017",
-      "st_tchan_antitop_2017",
-      "st_tchan_top_2017",
-      "st_tw_antitop_2017",
-      "st_tw_top_2017",
-      "ttbar_2017",
+      #"qcdht0100_"+year,
+      #"qcdht0200_"+year,
+      #"qcdht0300_"+year,
+      "qcdht0500_"+year,
+      "qcdht0700_"+year,
+      "qcdht1000_"+year,
+      "qcdht1500_"+year,
+      "qcdht2000_"+year,
+      #"wjetstolnuht0100_"+year,
+      "wjetstolnuht0200_"+year,
+      "wjetstolnuht0400_"+year,
+      "wjetstolnuht0600_"+year,
+      "wjetstolnuht0800_"+year,
+      "wjetstolnuht1200_"+year,
+      "wjetstolnuht2500_"+year,
+      #"wjetstolnuht0400sum_"+year,
+      #"wjetstolnuht0600sum_"+year,
+      #"wjetstolnuht0800sum_"+year,
+      #"wjetstolnuht1200sum_"+year,
+      #"wjetstolnuht2500sum_"+year,
+      #"zjetstonunuht0100_"+year,
+      "zjetstonunuht0200_"+year,
+      "zjetstonunuht0400_"+year,
+      "zjetstonunuht0600_"+year,
+      "zjetstonunuht0800_"+year,
+      "zjetstonunuht1200_"+year,
+      "zjetstonunuht2500_"+year,
+      "ww_"+year,
+      "wz_"+year,
+      "zz_"+year,
+      "st_tchan_antitop_"+year,
+      "st_tchan_top_"+year,
+      "st_tw_antitop_"+year,
+      "st_tw_top_"+year,
+      "ttbar_"+year,
     ]
     if doBackground:
       #makeplotfile(fns,"background_METtrigger",False)
-      makeplotfile(fns,"background_METtrigger",False,False,0.4,0.4)
+      makeplotfile(fns,"background_METtrigger_"+year,False,False,0.4,0.4)
       #for bkg_fn in fns:
       #  makeplotfile([bkg_fn],bkg_fn+"_lowMET_bquark",False)
 
-    sig_fns = ['mfv_splitSUSY_tau000000100um_M2000_1800_2017',
-               'mfv_splitSUSY_tau000000100um_M2000_1900_2017',
-               'mfv_splitSUSY_tau000000100um_M2400_2300_2017',
-               'mfv_splitSUSY_tau000000300um_M2000_1800_2017',
-               'mfv_splitSUSY_tau000000300um_M2000_1900_2017',
-               'mfv_splitSUSY_tau000000300um_M2400_2300_2017',
-               'mfv_splitSUSY_tau000001000um_M2000_1800_2017',
-               'mfv_splitSUSY_tau000001000um_M2000_1900_2017',
-               'mfv_splitSUSY_tau000001000um_M2400_2300_2017',
-               'mfv_splitSUSY_tau000001000um_M1200_1100_2017',
-               'mfv_splitSUSY_tau000001000um_M1400_1200_2017',
-               'mfv_splitSUSY_tau000010000um_M2000_1800_2017',
-               'mfv_splitSUSY_tau000010000um_M2000_1900_2017',
-               'mfv_splitSUSY_tau000010000um_M2400_2300_2017',
-               'mfv_splitSUSY_tau000010000um_M1200_1100_2017',
-               'mfv_splitSUSY_tau000010000um_M1400_1200_2017',
-               'mfv_splitSUSY_tau000100000um_M2000_1800_2017',
-               'mfv_splitSUSY_tau000100000um_M2000_1900_2017',
-               #'mfv_splitSUSY_tau001000000um_M2000_1800_2017',
-               #'mfv_splitSUSY_tau001000000um_M2000_1900_2017',
-               #'mfv_splitSUSY_tau010000000um_M2000_1800_2017',
-               #'mfv_splitSUSY_tau010000000um_M2000_1900_2017',
+    sig_fns = [#'mfv_splitSUSY_tau000000100um_M2000_1800_'+year,
+               #'mfv_splitSUSY_tau000000100um_M2000_1900_'+year,
+               #'mfv_splitSUSY_tau000000100um_M2400_2300_'+year,
+               #'mfv_splitSUSY_tau000000300um_M2000_1800_'+year,
+               #'mfv_splitSUSY_tau000000300um_M2000_1900_'+year,
+               #'mfv_splitSUSY_tau000000300um_M2400_2300_'+year,
+               #'mfv_splitSUSY_tau000001000um_M2000_1800_'+year,
+               #'mfv_splitSUSY_tau000001000um_M2000_1900_'+year,
+               #'mfv_splitSUSY_tau000001000um_M2400_2300_'+year,
+               #'mfv_splitSUSY_tau000001000um_M1200_1100_'+year,
+               #'mfv_splitSUSY_tau000001000um_M1400_1200_'+year,
+               #'mfv_splitSUSY_tau000010000um_M2000_1800_'+year,
+               #'mfv_splitSUSY_tau000010000um_M2000_1900_'+year,
+               #'mfv_splitSUSY_tau000010000um_M2400_2300_'+year,
+               #'mfv_splitSUSY_tau000010000um_M1200_1100_'+year,
+               #'mfv_splitSUSY_tau000010000um_M1400_1200_'+year,
+               #'mfv_splitSUSY_tau000100000um_M2000_1800_'+year,
+               #'mfv_splitSUSY_tau000100000um_M2000_1900_'+year,
+               'WminusHToSSTobbbb_tau100um_M55_'+year,
+               #'WminusHToSSTobbbb_tau10mm_M55_'+year,
+               #'WminusHToSSTobbbb_tau1mm_M55_'+year,
+               #'WminusHToSSTodddd_tau100um_M55_'+year,
+               #'WminusHToSSTodddd_tau10mm_M55_'+year,
+               #'WminusHToSSTodddd_tau1mm_M55_'+year,
+               #'mfv_splitSUSY_tau001000000um_M2000_1800_'+year,
+               #'mfv_splitSUSY_tau001000000um_M2000_1900_'+year,
+               #'mfv_splitSUSY_tau010000000um_M2000_1800_'+year,
+               #'mfv_splitSUSY_tau010000000um_M2000_1900_'+year,
               ]
     if doSignal:
       for sig_fn in sig_fns:
         makeplotfile([sig_fn],sig_fn+"_METtrigger",True,False,0.4,0.4)
-    fns_data = [
-      'MET2017B',
-      'MET2017C',
-      'MET2017D',
-      'MET2017E',
-      'MET2017F',
-    ]
+    fns_data = []
+    if year=='2017':
+      fns_data = [
+        'MET2017B',
+        'MET2017C',
+        'MET2017D',
+        'MET2017E',
+        'MET2017F',
+      ]
+    elif year =='2018':
+      fns_data = [
+        'MET2018A',
+        'MET2018B',
+        'MET2018C',
+        'MET2018D',
+      ]
+    elif year =='20161':
+      fns_data = [
+        'MET20161B2',
+        'MET20161C',
+        'MET20161D',
+        'MET20161E',
+        'MET20161F',
+      ]
+    elif year =='20162':
+      fns_data = [
+        'MET20162F',
+        'MET20162G',
+        'MET20162H',
+      ]
     if doData:
-      makeplotfile(fns_data,"data_METtrigger",False,True,0.4,0.4)
+      makeplotfile(fns_data,"data_METtrigger_"+year,False,True,0.4,0.4)
+
+    fns_tm = [
+      'hists',
+    ]
+    if TrackMover:
+      makeplotfile(fns_tm,"hists",False,False,0.4,0.4)
 
 main()
 

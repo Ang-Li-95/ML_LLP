@@ -14,109 +14,122 @@ from utils.parameterSet import *
 normalize_factors_tk = []
 normalize_factors_vtx = []
 fns_xsec_UL = {
-    "qcdht0100_2017": 2.366e+07,
-    "qcdht0200_2017": 1.550e+06,
-    "qcdht0300_2017": 3.245e+05,
-    "qcdht0500_2017": 3.032e+04,
-    "qcdht0700_2017": 6.430e+03,
-    "qcdht1000_2017": 1.118e+03,
-    "qcdht1500_2017": 1.080e+02,
-    "qcdht2000_2017": 2.201e+01,
-    "wjetstolnuht0100_2017": 1.255e+03,
-    "wjetstolnuht0200_2017": 3.364e+02,
-    "wjetstolnuht0400_2017": 4.526e+01,
-    "wjetstolnuht0600_2017": 1.099e+01,
-    "wjetstolnuht0800_2017": 4.924,
-    "wjetstolnuht1200_2017": 1.157,
-    "wjetstolnuht2500_2017": 2.623e-02,
-    "zjetstonunuht0100_2017": 2.659e+02,
-    "zjetstonunuht0200_2017": 7.297e+01,
-    "zjetstonunuht0400_2017": 9.917,
-    "zjetstonunuht0600_2017": 2.410,
-    "zjetstonunuht0800_2017": 1.080,
-    "zjetstonunuht1200_2017": 2.521e-01,
-    "zjetstonunuht2500_2017": 5.633e-03,
-    "ww_2017": 7.587e+01,
-    "wz_2017": 2.756e+01,
-    "zz_2017": 1.214e+01,
-    "ttbar_2017": 7.572e+02,
-    "st_tchan_antitop_2017": 6.793e+01,
-    "st_tchan_top_2017": 1.134e+02,
-    "st_tw_antitop_2017": 3.251e+01,
-    "st_tw_top_2017": 3.245e+01,
-    "mfv_splitSUSY_tau000000100um_M2000_1800_2017": 1e-03,
-    "mfv_splitSUSY_tau000000100um_M2000_1900_2017": 1e-03,
-    'mfv_splitSUSY_tau000000100um_M2400_2300_2017': 1e-03,
-    "mfv_splitSUSY_tau000000300um_M2000_1800_2017": 1e-03,
-    "mfv_splitSUSY_tau000000300um_M2000_1900_2017": 1e-03,
-    'mfv_splitSUSY_tau000000300um_M2400_2300_2017': 1e-03,
-    "mfv_splitSUSY_tau000001000um_M2000_1800_2017": 1e-03,
-    "mfv_splitSUSY_tau000001000um_M2000_1900_2017": 1e-03,
-    'mfv_splitSUSY_tau000001000um_M2400_2300_2017': 1e-03,
-    'mfv_splitSUSY_tau000001000um_M1200_1100_2017': 1e-03,
-    'mfv_splitSUSY_tau000001000um_M1400_1200_2017': 1e-03,
-    "mfv_splitSUSY_tau000010000um_M2000_1800_2017": 1e-03,
-    "mfv_splitSUSY_tau000010000um_M2000_1900_2017": 1e-03,
-    'mfv_splitSUSY_tau000010000um_M2400_2300_2017': 1e-03,
-    'mfv_splitSUSY_tau000010000um_M1200_1100_2017': 1e-03,
-    'mfv_splitSUSY_tau000010000um_M1400_1200_2017': 1e-03,
-    'mfv_splitSUSY_tau000100000um_M2000_1800_2017': 1e-03,
-    'mfv_splitSUSY_tau000100000um_M2000_1900_2017': 1e-03,
-    'mfv_splitSUSY_tau001000000um_M2000_1800_2017': 1e-03,
-    'mfv_splitSUSY_tau001000000um_M2000_1900_2017': 1e-03,
-    'mfv_splitSUSY_tau010000000um_M2000_1800_2017': 1e-03,
-    'mfv_splitSUSY_tau010000000um_M2000_1900_2017': 1e-03,
+    "qcdht0100": 2.366e+07,
+    "qcdht0200": 1.550e+06,
+    "qcdht0300": 3.245e+05,
+    "qcdht0500": 3.032e+04,
+    "qcdht0700": 6.430e+03,
+    "qcdht1000": 1.118e+03,
+    "qcdht1500": 1.080e+02,
+    "qcdht2000": 2.201e+01,
+    "wjetstolnuht0100": 1.255e+03,
+    "wjetstolnuht0200": 3.364e+02,
+    "wjetstolnuht0400": 4.526e+01,
+    "wjetstolnuht0600": 1.099e+01,
+    "wjetstolnuht0800": 4.924,
+    "wjetstolnuht1200": 1.157,
+    "wjetstolnuht2500": 2.623e-02,
+    "wjetstolnuht0400sum": 4.526e+01,
+    "wjetstolnuht0600sum": 1.099e+01,
+    "wjetstolnuht0800sum": 4.924,
+    "wjetstolnuht1200sum": 1.157,
+    "wjetstolnuht2500sum": 2.623e-02,
+    "zjetstonunuht0100": 2.659e+02,
+    "zjetstonunuht0200": 7.297e+01,
+    "zjetstonunuht0400": 9.917,
+    "zjetstonunuht0600": 2.410,
+    "zjetstonunuht0800": 1.080,
+    "zjetstonunuht1200": 2.521e-01,
+    "zjetstonunuht2500": 5.633e-03,
+    "ww": 7.587e+01,
+    "wz": 2.756e+01,
+    "zz": 1.214e+01,
+    "ttbar": 7.572e+02,
+    "st_tchan_antitop": 6.793e+01,
+    "st_tchan_top": 1.134e+02,
+    "st_tw_antitop": 3.251e+01,
+    "st_tw_top": 3.245e+01,
+    "mfv_splitSUSY_tau000000100um_M2000_1800": 1e-03,
+    "mfv_splitSUSY_tau000000100um_M2000_1900": 1e-03,
+    'mfv_splitSUSY_tau000000100um_M2400_2300': 1e-03,
+    "mfv_splitSUSY_tau000000300um_M2000_1800": 1e-03,
+    "mfv_splitSUSY_tau000000300um_M2000_1900": 1e-03,
+    'mfv_splitSUSY_tau000000300um_M2400_2300': 1e-03,
+    "mfv_splitSUSY_tau000001000um_M2000_1800": 1e-03,
+    "mfv_splitSUSY_tau000001000um_M2000_1900": 1e-03,
+    'mfv_splitSUSY_tau000001000um_M2400_2300': 1e-03,
+    'mfv_splitSUSY_tau000001000um_M1200_1100': 1e-03,
+    'mfv_splitSUSY_tau000001000um_M1400_1200': 1e-03,
+    "mfv_splitSUSY_tau000010000um_M2000_1800": 1e-03,
+    "mfv_splitSUSY_tau000010000um_M2000_1900": 1e-03,
+    'mfv_splitSUSY_tau000010000um_M2400_2300': 1e-03,
+    'mfv_splitSUSY_tau000010000um_M1200_1100': 1e-03,
+    'mfv_splitSUSY_tau000010000um_M1400_1200': 1e-03,
+    'mfv_splitSUSY_tau000100000um_M2000_1800': 1e-03,
+    'mfv_splitSUSY_tau000100000um_M2000_1900': 1e-03,
+    'mfv_splitSUSY_tau001000000um_M2000_1800': 1e-03,
+    'mfv_splitSUSY_tau001000000um_M2000_1900': 1e-03,
+    'mfv_splitSUSY_tau010000000um_M2000_1800': 1e-03,
+    'mfv_splitSUSY_tau010000000um_M2000_1900': 1e-03,
+    'WminusHToSSTobbbb_tau100um_M55': 1e-03,
+    'WminusHToSSTobbbb_tau10mm_M55': 1e-03,
+    'WminusHToSSTobbbb_tau1mm_M55': 1e-03,
+    'WminusHToSSTodddd_tau100um_M55': 1e-03,
+    'WminusHToSSTodddd_tau10mm_M55': 1e-03,
+    'WminusHToSSTodddd_tau1mm_M55': 1e-03,
+    'hists': 1,
 }
 
 fns_xsec_EOY = {
-    "qcdht0200_2017": 1.547e+06,
-    "qcdht0300_2017": 3.226E+05,
-    "qcdht0500_2017": 2.998E+04,
-    "qcdht0700_2017": 6.351E+03,
-    "qcdht1000_2017": 1.096E+03,
-    "qcdht1500_2017": 99.0,
-    "qcdht2000_2017": 20.2,
-    "wjetstolnusum_2017": 5.28E+04,
-    #"wjetstolnu_2017": 5.28E+04,
-    #"wjetstolnuext_2017": 5.28E+04,
-    "zjetstonunuht0100_2017": 302.8,
-    "zjetstonunuht0200_2017": 92.59,
-    "zjetstonunuht0400_2017": 13.18,
-    "zjetstonunuht0600_2017": 3.257,
-    "zjetstonunuht0800_2017": 1.49,
-    "zjetstonunuht1200_2017": 0.3419,
-    "zjetstonunuht2500_2017": 0.005146,
-    "ttbar_2017": 832,
-    "ttbarht0600_2017": 1.821,
-    "ttbarht0800_2017": 0.7532,
-    "ttbarht1200_2017": 0.1316,
-    "ttbarht2500_2017": 0.001407,
-    "mfv_splitSUSY_tau000000000um_M2000_1800_2017": 1e-03,
-    "mfv_splitSUSY_tau000000000um_M2000_1900_2017": 1e-03,
-    'mfv_splitSUSY_tau000000000um_M2400_2300_2017': 1e-03,
-    "mfv_splitSUSY_tau000000300um_M2000_1800_2017": 1e-03,
-    "mfv_splitSUSY_tau000000300um_M2000_1900_2017": 1e-03,
-    'mfv_splitSUSY_tau000000300um_M2400_2300_2017': 1e-03,
-    "mfv_splitSUSY_tau000001000um_M2000_1800_2017": 1e-03,
-    "mfv_splitSUSY_tau000001000um_M2000_1900_2017": 1e-03,
-    'mfv_splitSUSY_tau000001000um_M2400_2300_2017': 1e-03,
-    'mfv_splitSUSY_tau000001000um_M1200_1100_2017': 1e-03,
-    'mfv_splitSUSY_tau000001000um_M1400_1200_2017': 1e-03,
-    "mfv_splitSUSY_tau000010000um_M2000_1800_2017": 1e-03,
-    "mfv_splitSUSY_tau000010000um_M2000_1900_2017": 1e-03,
-    'mfv_splitSUSY_tau000010000um_M2400_2300_2017': 1e-03,
-    'mfv_splitSUSY_tau000010000um_M1200_1100_2017': 1e-03,
-    'mfv_splitSUSY_tau000010000um_M1400_1200_2017': 1e-03,
+    "qcdht0200": 1.547e+06,
+    "qcdht0300": 3.226E+05,
+    "qcdht0500": 2.998E+04,
+    "qcdht0700": 6.351E+03,
+    "qcdht1000": 1.096E+03,
+    "qcdht1500": 99.0,
+    "qcdht2000": 20.2,
+    "wjetstolnusum": 5.28E+04,
+    #"wjetstolnu": 5.28E+04,
+    #"wjetstolnuext": 5.28E+04,
+    "zjetstonunuht0100": 302.8,
+    "zjetstonunuht0200": 92.59,
+    "zjetstonunuht0400": 13.18,
+    "zjetstonunuht0600": 3.257,
+    "zjetstonunuht0800": 1.49,
+    "zjetstonunuht1200": 0.3419,
+    "zjetstonunuht2500": 0.005146,
+    "ttbar": 832,
+    "ttbarht0600": 1.821,
+    "ttbarht0800": 0.7532,
+    "ttbarht1200": 0.1316,
+    "ttbarht2500": 0.001407,
+    "mfv_splitSUSY_tau000000000um_M2000_1800": 1e-03,
+    "mfv_splitSUSY_tau000000000um_M2000_1900": 1e-03,
+    'mfv_splitSUSY_tau000000000um_M2400_2300': 1e-03,
+    "mfv_splitSUSY_tau000000300um_M2000_1800": 1e-03,
+    "mfv_splitSUSY_tau000000300um_M2000_1900": 1e-03,
+    'mfv_splitSUSY_tau000000300um_M2400_2300': 1e-03,
+    "mfv_splitSUSY_tau000001000um_M2000_1800": 1e-03,
+    "mfv_splitSUSY_tau000001000um_M2000_1900": 1e-03,
+    'mfv_splitSUSY_tau000001000um_M2400_2300': 1e-03,
+    'mfv_splitSUSY_tau000001000um_M1200_1100': 1e-03,
+    'mfv_splitSUSY_tau000001000um_M1400_1200': 1e-03,
+    "mfv_splitSUSY_tau000010000um_M2000_1800": 1e-03,
+    "mfv_splitSUSY_tau000010000um_M2000_1900": 1e-03,
+    'mfv_splitSUSY_tau000010000um_M2400_2300': 1e-03,
+    'mfv_splitSUSY_tau000010000um_M1200_1100': 1e-03,
+    'mfv_splitSUSY_tau000010000um_M1400_1200': 1e-03,
 }
 
 def GetXsec(sample):
+    nsample = sample[:sample.find('_',-7,-1)]
     if isUL:
         xsecs = fns_xsec_UL
     else:
         xsecs = fns_xsec_EOY
-    if sample not in xsecs:
-        raise ValueError("Sample {} not available!!!".format(sample))
-    return xsecs[sample]
+    if nsample not in xsecs:
+        raise ValueError("Sample {} not available!!!".format(nsample))
+    return xsecs[nsample]
 
 def GetXsecList(fns):
     if isUL:
@@ -125,8 +138,9 @@ def GetXsecList(fns):
         fns_xsec = fns_xsec_EOY
     xsecs = []
     for fn in fns:
-        assert(fn in fns_xsec)
-        xsecs.append(fns_xsec[fn])
+        nfn = fn[:fn.find('_',-7,-1)]
+        assert(nfn in fns_xsec)
+        xsecs.append(fns_xsec[nfn])
     return xsecs
 
 def GetNormWeight(fns, fn_dir, isData, int_lumi=1):
@@ -247,7 +261,7 @@ def GetDataAndLabel(fns, split, isSignal, cut="", lumi=200000):
         
     return (tk_train, vtx_train, label_train), (tk_val, vtx_val, label_val), (tk_test, vtx_test, label_test)
 
-def importData(split, normalize=True,shuffle=True):
+def importData(split,year,isMC,normalize=True,shuffle=True):
     '''
     import training/val/testing data from root file normalize, padding and shuffle if needed
     split: [train, val, test] fraction
@@ -283,9 +297,9 @@ def importData(split, normalize=True,shuffle=True):
 
     if normalize:
       for i in range(2):
-        data_train[i] = normalizedata(data_train[i])
-        data_val[i] = normalizedata(data_val[i])
-        data_test[i] = normalizedata(data_test[i])
+        data_train[i] = normalizedata(data_train[i], year, isMC)
+        data_val[i] = normalizedata(data_val[i], year, isMC)
+        data_test[i] = normalizedata(data_test[i], year, isMC)
     
     return data_train, data_val, data_test, sig_bkg_weight
 
@@ -299,7 +313,7 @@ def zeropadding(matrix, l):
     for i in range(matrix.shape[1]):
         # transfer df to matrix for each event
         m = np.array([matrix[:,i][v] for v in range(len(mlvar_tk))])
-        sortedidx = np.argsort(m[0,:])[::-1]
+        sortedidx = np.argsort(m[0,:])[::-1] # this step orders pt of tracks
         m = m[:,sortedidx]
         if m.shape[1]<l:
             idx_mod = l-m.shape[1]
@@ -309,10 +323,14 @@ def zeropadding(matrix, l):
             m_mod.append(m[:,0:l])
     return np.array(m_mod)
 
-def normalizedata(data):
+def normalizedata(data, year, isMC):
   if isUL:
-    normalize_factors_tk = normalize_factors_tk_UL
-    normalize_factors_vtx = normalize_factors_vtx_UL
+    if isMC:
+      normalize_factors_tk = normalize_factors_tk_UL[year+"MC"]
+      normalize_factors_vtx = normalize_factors_vtx_UL[year+"MC"]
+    else:
+      normalize_factors_tk = normalize_factors_tk_UL[year]
+      normalize_factors_vtx = normalize_factors_vtx_UL[year]
   else:
     normalize_factors_tk = normalize_factors_tk_EOY
     normalize_factors_vtx = normalize_factors_vtx_EOY
