@@ -23,12 +23,12 @@ from utils.plot_setting import *
 
 METNoMu_avai = True
 B_info = True
-doSignal = True
-doBackground = False
-doData = False
+doSignal = False
+doBackground = True
+doData = True
 TrackMover = False
 #assert(not (doData and (doBackground or doSignal)))
-year = "2017"
+year = "2018"
 int_lumi = 59683.0 if year=="2018" else 40610.0 if year=="2017" else 19664.0 if year=="20161" else 16978.0 if year=="20162" else 0.0
 fndir_plot = '/uscms/home/ali/nobackup/LLP/crabdir/MLTreeULV13METm/'
 #fndir_plot = '/uscms/home/ali/nobackup/LLP/crabdir/MLTree_prefiringweight_ULV13METm/'
@@ -43,7 +43,7 @@ if TrackMover:
 #m_path = './model_1119_ntk_1/'
 m_path = './model_0407_ntk_ULV11_2/'
 #m_path = './model_0503_ntk_ULV11_nofakeMETveto_8/'
-save_plot_path='./UL0407_ULV11_ntk_2_RunII/'
+save_plot_path='./UL0407_ULV11_ntk_2_RunII_trackPTordered/'
 if not os.path.exists(save_plot_path):
       os.makedirs(save_plot_path)
 
@@ -439,25 +439,25 @@ def main():
       #for bkg_fn in fns:
       #  makeplotfile([bkg_fn],bkg_fn+"_lowMET_bquark",False)
 
-    sig_fns = [#'mfv_splitSUSY_tau000000100um_M2000_1800_'+year,
-               #'mfv_splitSUSY_tau000000100um_M2000_1900_'+year,
-               #'mfv_splitSUSY_tau000000100um_M2400_2300_'+year,
-               #'mfv_splitSUSY_tau000000300um_M2000_1800_'+year,
-               #'mfv_splitSUSY_tau000000300um_M2000_1900_'+year,
-               #'mfv_splitSUSY_tau000000300um_M2400_2300_'+year,
-               #'mfv_splitSUSY_tau000001000um_M2000_1800_'+year,
-               #'mfv_splitSUSY_tau000001000um_M2000_1900_'+year,
-               #'mfv_splitSUSY_tau000001000um_M2400_2300_'+year,
-               #'mfv_splitSUSY_tau000001000um_M1200_1100_'+year,
-               #'mfv_splitSUSY_tau000001000um_M1400_1200_'+year,
-               #'mfv_splitSUSY_tau000010000um_M2000_1800_'+year,
-               #'mfv_splitSUSY_tau000010000um_M2000_1900_'+year,
-               #'mfv_splitSUSY_tau000010000um_M2400_2300_'+year,
-               #'mfv_splitSUSY_tau000010000um_M1200_1100_'+year,
-               #'mfv_splitSUSY_tau000010000um_M1400_1200_'+year,
-               #'mfv_splitSUSY_tau000100000um_M2000_1800_'+year,
-               #'mfv_splitSUSY_tau000100000um_M2000_1900_'+year,
-               'WminusHToSSTobbbb_tau100um_M55_'+year,
+    sig_fns = ['mfv_splitSUSY_tau000000100um_M2000_1800_'+year,
+               'mfv_splitSUSY_tau000000100um_M2000_1900_'+year,
+               'mfv_splitSUSY_tau000000100um_M2400_2300_'+year,
+               'mfv_splitSUSY_tau000000300um_M2000_1800_'+year,
+               'mfv_splitSUSY_tau000000300um_M2000_1900_'+year,
+               'mfv_splitSUSY_tau000000300um_M2400_2300_'+year,
+               'mfv_splitSUSY_tau000001000um_M2000_1800_'+year,
+               'mfv_splitSUSY_tau000001000um_M2000_1900_'+year,
+               'mfv_splitSUSY_tau000001000um_M2400_2300_'+year,
+               'mfv_splitSUSY_tau000001000um_M1200_1100_'+year,
+               'mfv_splitSUSY_tau000001000um_M1400_1200_'+year,
+               'mfv_splitSUSY_tau000010000um_M2000_1800_'+year,
+               'mfv_splitSUSY_tau000010000um_M2000_1900_'+year,
+               'mfv_splitSUSY_tau000010000um_M2400_2300_'+year,
+               'mfv_splitSUSY_tau000010000um_M1200_1100_'+year,
+               'mfv_splitSUSY_tau000010000um_M1400_1200_'+year,
+               'mfv_splitSUSY_tau000100000um_M2000_1800_'+year,
+               'mfv_splitSUSY_tau000100000um_M2000_1900_'+year,
+               #'WminusHToSSTobbbb_tau100um_M55_'+year,
                #'WminusHToSSTobbbb_tau10mm_M55_'+year,
                #'WminusHToSSTobbbb_tau1mm_M55_'+year,
                #'WminusHToSSTodddd_tau100um_M55_'+year,
