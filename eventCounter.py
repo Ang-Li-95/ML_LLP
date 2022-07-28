@@ -21,7 +21,12 @@ if __name__ == '__main__':
   fns = [
     'data',
     'background',
-    #'mfv_splitSUSY_tau000000100um_M2000_1800_2017',
+    #'mfv_splitSUSY_tau000000100um_M2000_1800_',
+    #'mfv_splitSUSY_tau000000100um_M2000_1900_',
+    #'mfv_splitSUSY_tau000000300um_M2000_1800_',
+    #'mfv_splitSUSY_tau000000300um_M2000_1900_',
+    #'mfv_splitSUSY_tau000001000um_M2000_1800_',
+    #'mfv_splitSUSY_tau000001000um_M2000_1900_',
     #'mfv_splitSUSY_tau000000100um_M2400_2300_2017',
     #'mfv_splitSUSY_tau000000300um_M2000_1800_2017',
     #'mfv_splitSUSY_tau000000300um_M2400_2300_2017',
@@ -43,6 +48,8 @@ if __name__ == '__main__':
     'inclusive_3trk': [],
   }
   for fn in fns:
+    if 'mfv' in fn:
+      fn_common = args.year+'_METtrigger.root'
     f = ROOT.TFile(fn_path+fn+fn_common)
     print(fn)
     for d in dirs:

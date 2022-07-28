@@ -18,10 +18,13 @@ import awkward as ak
 from utils.parameterSet import *
 from utils.utilities import *
 
-year="2017"
+years=["20161", "20162", "2017", "2018"]
+#years = ["2018"]
 
 if not os.path.exists(dir_model):
       os.makedirs(dir_model)
+else:
+      raise ValueError
 
 def distance_corr(var_1, var_2, normedweight, power=2):
     """var_1: First variable to decorrelate (eg mass)
@@ -223,7 +226,45 @@ def phi_vtx(T, vtx):
     h3 = tf.reshape(h3, [-1,1])
     return h3
 
-train, val, test, pos_weight = importData([0.7,0.15,0.15], year, True, True, True)
+#train, val, test, pos_weight = importData([0.7,0.15,0.15], year, True, True, True)
+
+
+train_total = []
+val_total = []
+test_total = []
+nevt_sig = 0
+nevt_bkg = 0
+for year in years:
+    if year=="20161" or year=="20162":
+      maxsigevt = 250
+    else:
+      maxsigevt = 500
+    train_year, val_year, test_year, nevts_year = importData([0.7,0.15,0.15], year, True, True, True, maxsigevt=maxsigevt)
+    train_total.append(train_year)
+    val_total.append(val_year)
+    test_total.append(test_year)
+    nevt_sig += nevts_year[0]
+    nevt_bkg += nevts_year[1]
+nitems = len(train_total[0])
+train = [None]*(nitems)
+val = [None]*(nitems)
+test = [None]*(nitems)
+for i in range(nitems):
+    train_tot = np.concatenate([train_total[j][i] for j in range(len(years))])
+    val_tot = np.concatenate([val_total[j][i] for j in range(len(years))])
+    test_tot = np.concatenate([train_total[j][i] for j in range(len(years))])
+    train[i] = train_tot
+    val[i] = val_tot
+    test[i] = test_tot
+    
+for d in [train, val, test]:
+    shuffler = np.random.permutation(len(d[0]))
+    for i in range(nitems):
+        d[i] = d[i][shuffler]
+
+pos_weight = float(nevt_bkg) / nevt_sig
+print("Ttotal number of Signal {}, total number of background {}. Training weight {}.".format(nevt_sig, nevt_bkg, pos_weight))
+
 
 #def train():
 
@@ -307,7 +348,7 @@ min_loss = 100
 for i in range(num_epochs):
     lambda_dcorr_epoch = 0
     if i>=10:
-      lambda_dcorr_epoch = 0.5
+      lambda_dcorr_epoch = 0.8
     if i==num_epochs_tk:
       print("training on Vertices info")
     loss_train = 0
@@ -424,8 +465,8 @@ if isUL:
 else:
   normalize_factors_vtx = normalize_factors_vtx_EOY
 
-mean = normalize_factors_vtx[0][0]
-stddev = normalize_factors_vtx[0][1]
+mean = normalize_factors_vtx["2017MC"][0][0]
+stddev = normalize_factors_vtx["2017MC"][0][1]
 print("vtx ntk mean {}, std.dev. {}".format(mean, stddev))
 with tf.Session() as newsess:
     newsaver = tf.train.import_meta_graph(dir_model+"test_model.meta")

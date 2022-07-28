@@ -9,6 +9,7 @@ tf.disable_v2_behavior()
 import matplotlib.pyplot as plt
 
 import numpy as np
+import pandas as pd
 import awkward as ak
 from utils.parameterSet import *
 normalize_factors_tk = []
@@ -49,28 +50,154 @@ fns_xsec_UL = {
     "st_tchan_top": 1.134e+02,
     "st_tw_antitop": 3.251e+01,
     "st_tw_top": 3.245e+01,
-    "mfv_splitSUSY_tau000000100um_M2000_1800": 1e-03,
-    "mfv_splitSUSY_tau000000100um_M2000_1900": 1e-03,
-    'mfv_splitSUSY_tau000000100um_M2400_2300': 1e-03,
-    "mfv_splitSUSY_tau000000300um_M2000_1800": 1e-03,
-    "mfv_splitSUSY_tau000000300um_M2000_1900": 1e-03,
-    'mfv_splitSUSY_tau000000300um_M2400_2300': 1e-03,
-    "mfv_splitSUSY_tau000001000um_M2000_1800": 1e-03,
-    "mfv_splitSUSY_tau000001000um_M2000_1900": 1e-03,
-    'mfv_splitSUSY_tau000001000um_M2400_2300': 1e-03,
-    'mfv_splitSUSY_tau000001000um_M1200_1100': 1e-03,
-    'mfv_splitSUSY_tau000001000um_M1400_1200': 1e-03,
-    "mfv_splitSUSY_tau000010000um_M2000_1800": 1e-03,
-    "mfv_splitSUSY_tau000010000um_M2000_1900": 1e-03,
-    'mfv_splitSUSY_tau000010000um_M2400_2300': 1e-03,
-    'mfv_splitSUSY_tau000010000um_M1200_1100': 1e-03,
-    'mfv_splitSUSY_tau000010000um_M1400_1200': 1e-03,
-    'mfv_splitSUSY_tau000100000um_M2000_1800': 1e-03,
-    'mfv_splitSUSY_tau000100000um_M2000_1900': 1e-03,
-    'mfv_splitSUSY_tau001000000um_M2000_1800': 1e-03,
-    'mfv_splitSUSY_tau001000000um_M2000_1900': 1e-03,
-    'mfv_splitSUSY_tau010000000um_M2000_1800': 1e-03,
-    'mfv_splitSUSY_tau010000000um_M2000_1900': 1e-03,
+    #"mfv_splitSUSY_tau000000100um_M2000_1800": 1e-03,
+    #"mfv_splitSUSY_tau000000100um_M2000_1900": 1e-03,
+    #'mfv_splitSUSY_tau000000100um_M2400_2300': 1e-03,
+    #"mfv_splitSUSY_tau000000300um_M2000_1800": 1e-03,
+    #"mfv_splitSUSY_tau000000300um_M2000_1900": 1e-03,
+    #'mfv_splitSUSY_tau000000300um_M2400_2300': 1e-03,
+    #"mfv_splitSUSY_tau000001000um_M2000_1800": 1e-03,
+    #"mfv_splitSUSY_tau000001000um_M2000_1900": 1e-03,
+    #'mfv_splitSUSY_tau000001000um_M2400_2300': 1e-03,
+    #'mfv_splitSUSY_tau000001000um_M1200_1100': 1e-03,
+    #'mfv_splitSUSY_tau000001000um_M1400_1200': 1e-03,
+    #"mfv_splitSUSY_tau000010000um_M2000_1800": 1e-03,
+    #"mfv_splitSUSY_tau000010000um_M2000_1900": 1e-03,
+    #'mfv_splitSUSY_tau000010000um_M2400_2300': 1e-03,
+    #'mfv_splitSUSY_tau000010000um_M1200_1100': 1e-03,
+    #'mfv_splitSUSY_tau000010000um_M1400_1200': 1e-03,
+    #'mfv_splitSUSY_tau000100000um_M2000_1800': 1e-03,
+    #'mfv_splitSUSY_tau000100000um_M2000_1900': 1e-03,
+    #'mfv_splitSUSY_tau001000000um_M2000_1800': 1e-03,
+    #'mfv_splitSUSY_tau001000000um_M2000_1900': 1e-03,
+    #'mfv_splitSUSY_tau010000000um_M2000_1800': 1e-03,
+    #'mfv_splitSUSY_tau010000000um_M2000_1900': 1e-03,
+    "mfv_splitSUSY_tau000000100um_M1400_1200" : 1e-03,
+    "mfv_splitSUSY_tau000000100um_M1400_1300" : 1e-03,
+    "mfv_splitSUSY_tau000000100um_M1600_1400" : 1e-03,
+    "mfv_splitSUSY_tau000000100um_M1600_1500" : 1e-03,
+    "mfv_splitSUSY_tau000000100um_M1800_1600" : 1e-03,
+    "mfv_splitSUSY_tau000000100um_M1800_1700" : 1e-03,
+    "mfv_splitSUSY_tau000000100um_M2000_1800" : 1e-03,
+    "mfv_splitSUSY_tau000000100um_M2000_1900" : 1e-03,
+    "mfv_splitSUSY_tau000000100um_M2200_2000" : 1e-03,
+    "mfv_splitSUSY_tau000000100um_M2200_2100" : 1e-03,
+    "mfv_splitSUSY_tau000000100um_M2400_2200" : 1e-03,
+    "mfv_splitSUSY_tau000000100um_M2400_2300" : 1e-03,
+    "mfv_splitSUSY_tau000000100um_M2600_2400" : 1e-03,
+    "mfv_splitSUSY_tau000000100um_M2600_2500" : 1e-03,
+    "mfv_splitSUSY_tau000000300um_M1400_1200" : 1e-03,
+    "mfv_splitSUSY_tau000000300um_M1400_1300" : 1e-03,
+    "mfv_splitSUSY_tau000000300um_M1600_1400" : 1e-03,
+    "mfv_splitSUSY_tau000000300um_M1600_1500" : 1e-03,
+    "mfv_splitSUSY_tau000000300um_M1800_1600" : 1e-03,
+    "mfv_splitSUSY_tau000000300um_M1800_1700" : 1e-03,
+    "mfv_splitSUSY_tau000000300um_M2000_1800" : 1e-03,
+    "mfv_splitSUSY_tau000000300um_M2000_1900" : 1e-03,
+    "mfv_splitSUSY_tau000000300um_M2200_2000" : 1e-03,
+    "mfv_splitSUSY_tau000000300um_M2200_2100" : 1e-03,
+    "mfv_splitSUSY_tau000000300um_M2400_2200" : 1e-03,
+    "mfv_splitSUSY_tau000000300um_M2400_2300" : 1e-03,
+    "mfv_splitSUSY_tau000000300um_M2600_2400" : 1e-03,
+    "mfv_splitSUSY_tau000000300um_M2600_2500" : 1e-03,
+    "mfv_splitSUSY_tau000001000um_M1400_1200" : 1e-03,
+    "mfv_splitSUSY_tau000001000um_M1400_1300" : 1e-03,
+    "mfv_splitSUSY_tau000001000um_M1600_1400" : 1e-03,
+    "mfv_splitSUSY_tau000001000um_M1600_1500" : 1e-03,
+    "mfv_splitSUSY_tau000001000um_M1800_1600" : 1e-03,
+    "mfv_splitSUSY_tau000001000um_M1800_1700" : 1e-03,
+    "mfv_splitSUSY_tau000001000um_M2000_1800" : 1e-03,
+    "mfv_splitSUSY_tau000001000um_M2000_1900" : 1e-03,
+    "mfv_splitSUSY_tau000001000um_M2200_2000" : 1e-03,
+    "mfv_splitSUSY_tau000001000um_M2200_2100" : 1e-03,
+    "mfv_splitSUSY_tau000001000um_M2400_2200" : 1e-03,
+    "mfv_splitSUSY_tau000001000um_M2400_2300" : 1e-03,
+    "mfv_splitSUSY_tau000001000um_M2600_2400" : 1e-03,
+    "mfv_splitSUSY_tau000001000um_M2600_2500" : 1e-03,
+    "mfv_splitSUSY_tau000003000um_M1400_1200" : 1e-03,
+    "mfv_splitSUSY_tau000003000um_M1400_1300" : 1e-03,
+    "mfv_splitSUSY_tau000003000um_M1600_1400" : 1e-03,
+    "mfv_splitSUSY_tau000003000um_M1600_1500" : 1e-03,
+    "mfv_splitSUSY_tau000003000um_M1800_1600" : 1e-03,
+    "mfv_splitSUSY_tau000003000um_M1800_1700" : 1e-03,
+    "mfv_splitSUSY_tau000003000um_M2000_1800" : 1e-03,
+    "mfv_splitSUSY_tau000003000um_M2000_1900" : 1e-03,
+    "mfv_splitSUSY_tau000003000um_M2200_2000" : 1e-03,
+    "mfv_splitSUSY_tau000003000um_M2200_2100" : 1e-03,
+    "mfv_splitSUSY_tau000003000um_M2400_2200" : 1e-03,
+    "mfv_splitSUSY_tau000003000um_M2400_2300" : 1e-03,
+    "mfv_splitSUSY_tau000003000um_M2600_2400" : 1e-03,
+    "mfv_splitSUSY_tau000003000um_M2600_2500" : 1e-03,
+    "mfv_splitSUSY_tau000010000um_M1400_1200" : 1e-03,
+    "mfv_splitSUSY_tau000010000um_M1400_1300" : 1e-03,
+    "mfv_splitSUSY_tau000010000um_M1600_1400" : 1e-03,
+    "mfv_splitSUSY_tau000010000um_M1600_1500" : 1e-03,
+    "mfv_splitSUSY_tau000010000um_M1800_1600" : 1e-03,
+    "mfv_splitSUSY_tau000010000um_M1800_1700" : 1e-03,
+    "mfv_splitSUSY_tau000010000um_M2000_1800" : 1e-03,
+    "mfv_splitSUSY_tau000010000um_M2000_1900" : 1e-03,
+    "mfv_splitSUSY_tau000010000um_M2200_2000" : 1e-03,
+    "mfv_splitSUSY_tau000010000um_M2200_2100" : 1e-03,
+    "mfv_splitSUSY_tau000010000um_M2400_2200" : 1e-03,
+    "mfv_splitSUSY_tau000010000um_M2400_2300" : 1e-03,
+    "mfv_splitSUSY_tau000010000um_M2600_2400" : 1e-03,
+    "mfv_splitSUSY_tau000010000um_M2600_2500" : 1e-03,
+    "mfv_splitSUSY_tau000030000um_M1400_1200" : 1e-03,
+    "mfv_splitSUSY_tau000030000um_M1400_1300" : 1e-03,
+    "mfv_splitSUSY_tau000030000um_M1600_1400" : 1e-03,
+    "mfv_splitSUSY_tau000030000um_M1600_1500" : 1e-03,
+    "mfv_splitSUSY_tau000030000um_M1800_1600" : 1e-03,
+    "mfv_splitSUSY_tau000030000um_M1800_1700" : 1e-03,
+    "mfv_splitSUSY_tau000030000um_M2000_1800" : 1e-03,
+    "mfv_splitSUSY_tau000030000um_M2000_1900" : 1e-03,
+    "mfv_splitSUSY_tau000030000um_M2200_2000" : 1e-03,
+    "mfv_splitSUSY_tau000030000um_M2200_2100" : 1e-03,
+    "mfv_splitSUSY_tau000030000um_M2400_2200" : 1e-03,
+    "mfv_splitSUSY_tau000030000um_M2400_2300" : 1e-03,
+    "mfv_splitSUSY_tau000030000um_M2600_2400" : 1e-03,
+    "mfv_splitSUSY_tau000030000um_M2600_2500" : 1e-03,
+    "mfv_splitSUSY_tau000100000um_M1400_1200" : 1e-03,
+    "mfv_splitSUSY_tau000100000um_M1400_1300" : 1e-03,
+    "mfv_splitSUSY_tau000100000um_M1600_1400" : 1e-03,
+    "mfv_splitSUSY_tau000100000um_M1600_1500" : 1e-03,
+    "mfv_splitSUSY_tau000100000um_M1800_1600" : 1e-03,
+    "mfv_splitSUSY_tau000100000um_M1800_1700" : 1e-03,
+    "mfv_splitSUSY_tau000100000um_M2000_1800" : 1e-03,
+    "mfv_splitSUSY_tau000100000um_M2000_1900" : 1e-03,
+    "mfv_splitSUSY_tau000100000um_M2200_2000" : 1e-03,
+    "mfv_splitSUSY_tau000100000um_M2200_2100" : 1e-03,
+    "mfv_splitSUSY_tau000100000um_M2400_2200" : 1e-03,
+    "mfv_splitSUSY_tau000100000um_M2400_2300" : 1e-03,
+    "mfv_splitSUSY_tau000100000um_M2600_2400" : 1e-03,
+    "mfv_splitSUSY_tau000100000um_M2600_2500" : 1e-03,
+    "mfv_splitSUSY_tau000300000um_M1400_1200" : 1e-03,
+    "mfv_splitSUSY_tau000300000um_M1400_1300" : 1e-03,
+    "mfv_splitSUSY_tau000300000um_M1600_1400" : 1e-03,
+    "mfv_splitSUSY_tau000300000um_M1600_1500" : 1e-03,
+    "mfv_splitSUSY_tau000300000um_M1800_1600" : 1e-03,
+    "mfv_splitSUSY_tau000300000um_M1800_1700" : 1e-03,
+    "mfv_splitSUSY_tau000300000um_M2000_1800" : 1e-03,
+    "mfv_splitSUSY_tau000300000um_M2000_1900" : 1e-03,
+    "mfv_splitSUSY_tau000300000um_M2200_2000" : 1e-03,
+    "mfv_splitSUSY_tau000300000um_M2200_2100" : 1e-03,
+    "mfv_splitSUSY_tau000300000um_M2400_2200" : 1e-03,
+    "mfv_splitSUSY_tau000300000um_M2400_2300" : 1e-03,
+    "mfv_splitSUSY_tau000300000um_M2600_2400" : 1e-03,
+    "mfv_splitSUSY_tau000300000um_M2600_2500" : 1e-03,
+    "mfv_splitSUSY_tau001000000um_M1400_1200" : 1e-03,
+    "mfv_splitSUSY_tau001000000um_M1400_1300" : 1e-03,
+    "mfv_splitSUSY_tau001000000um_M1600_1400" : 1e-03,
+    "mfv_splitSUSY_tau001000000um_M1600_1500" : 1e-03,
+    "mfv_splitSUSY_tau001000000um_M1800_1600" : 1e-03,
+    "mfv_splitSUSY_tau001000000um_M1800_1700" : 1e-03,
+    "mfv_splitSUSY_tau001000000um_M2000_1800" : 1e-03,
+    "mfv_splitSUSY_tau001000000um_M2000_1900" : 1e-03,
+    "mfv_splitSUSY_tau001000000um_M2200_2000" : 1e-03,
+    "mfv_splitSUSY_tau001000000um_M2200_2100" : 1e-03,
+    "mfv_splitSUSY_tau001000000um_M2400_2200" : 1e-03,
+    "mfv_splitSUSY_tau001000000um_M2400_2300" : 1e-03,
+    "mfv_splitSUSY_tau001000000um_M2600_2400" : 1e-03,
+    "mfv_splitSUSY_tau001000000um_M2600_2500" : 1e-03,
     'WminusHToSSTobbbb_tau100um_M55': 1e-03,
     'WminusHToSSTobbbb_tau10mm_M55': 1e-03,
     'WminusHToSSTobbbb_tau1mm_M55': 1e-03,
@@ -177,7 +304,7 @@ def GetLoadFactor(fn,f,lumi):
     xsec = GetXsec(fn)
     return xsec*lumi/nevt
 
-def GetDataAndLabel(fns, split, isSignal, cut="", lumi=200000):
+def GetDataAndLabel(fns, split, isSignal, cut="", lumi=200000, maxsigevt=1000):
     tk_train = []
     tk_val = []
     tk_test = []
@@ -207,11 +334,11 @@ def GetDataAndLabel(fns, split, isSignal, cut="", lumi=200000):
         val_idx = -1
         nevt_total = len(matrix['met_pt'])
         nevt = int(loadfactor*nevt_total)
-        print("  {} events in file, {} are used".format(nevt_total, nevt))
         if nevt>nevt_total:
             nevt = nevt_total
         if isSignal:
-            nevt = nevt_total
+            nevt = min(nevt_total, maxsigevt)
+        print("  {} events in file, {} are used".format(nevt_total, nevt))
             
         train_idx = int(nevt*split[0])
         val_idx = int(nevt*(split[0]+split[1]))
@@ -261,16 +388,39 @@ def GetDataAndLabel(fns, split, isSignal, cut="", lumi=200000):
         
     return (tk_train, vtx_train, label_train), (tk_val, vtx_val, label_val), (tk_test, vtx_test, label_test)
 
-def importData(split,year,isMC,normalize=True,shuffle=True):
+def removeNaN(datasets):
+    idx1 = ~(pd.isnull(datasets[0])).any(axis=(1,2))
+    idx2 = ~(pd.isnull(datasets[1])).any(axis=(1))
+    idx = np.logical_and(idx1,idx2)
+    datasets_new = (datasets[0][idx], datasets[1][idx], datasets[2][idx])
+    #datasets[0] = datasets[0][idx]
+    #datasets[1] = datasets[1][idx]
+    #datasets[2] = datasets[2][idx]
+    return datasets_new
+
+def importData(split,year,isMC,normalize=True,shuffle=True,maxsigevt=1000):
     '''
     import training/val/testing data from root file normalize, padding and shuffle if needed
     split: [train, val, test] fraction
     returns data_train/val/test, which are tuples, structure:
       (data, ntk, label, met, data_no_normalized)
     '''
-    train_sig, val_sig, test_sig = GetDataAndLabel(fns_signal, split, True)
-    train_bkg, val_bkg, test_bkg = GetDataAndLabel(fns_bkg, split, False)
-    sig_bkg_weight = float(len(train_bkg[0]))/len(train_sig[0])
+    fn_s = fns_signal.copy()
+    for fi in range(len(fn_s)):
+      fn_s[fi] += year
+    fn_b = fns_bkg.copy()
+    for fi in range(len(fn_b)):
+      fn_b[fi] += year
+    train_sig, val_sig, test_sig = GetDataAndLabel(fn_s, split, True, maxsigevt=maxsigevt)
+    train_bkg, val_bkg, test_bkg = GetDataAndLabel(fn_b, split, False, maxsigevt=maxsigevt)
+    train_sig = removeNaN(train_sig)
+    val_sig = removeNaN(val_sig)
+    test_sig = removeNaN(test_sig)
+    print(train_bkg[0].shape)
+    train_bkg = removeNaN(train_bkg)
+    val_bkg = removeNaN(val_bkg)
+    test_bkg = removeNaN(test_bkg)
+    #sig_bkg_weight = float(len(train_bkg[0]))/len(train_sig[0])
     print("Training data: {0} signals {1} backgrounds".format(len(train_sig[0]), len(train_bkg[0])))
     nitems = len(train_sig)
     data_train = [None]*(nitems)
@@ -301,7 +451,7 @@ def importData(split,year,isMC,normalize=True,shuffle=True):
         data_val[i] = normalizedata(data_val[i], year, isMC)
         data_test[i] = normalizedata(data_test[i], year, isMC)
     
-    return data_train, data_val, data_test, sig_bkg_weight
+    return data_train, data_val, data_test, (len(train_sig[0]), len(train_bkg[0]))
 
 def zeropadding(matrix, l):
     '''
