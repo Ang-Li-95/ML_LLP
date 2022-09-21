@@ -204,7 +204,16 @@ fns_xsec_UL = {
     'WminusHToSSTodddd_tau100um_M55': 1e-03,
     'WminusHToSSTodddd_tau10mm_M55': 1e-03,
     'WminusHToSSTodddd_tau1mm_M55': 1e-03,
+    'mfv_neu_tau000100um_M0400' : 1e-03,
+    'mfv_neu_tau001000um_M0400' : 1e-03,
+    'mfv_neu_tau010000um_M0400' : 1e-03,
+    'mfv_neu_tau000100um_M1600' : 1e-03,
+    'mfv_neu_tau001000um_M1600' : 1e-03,
+    'mfv_neu_tau010000um_M1600' : 1e-03,
+    'mfv_splitSUSY_tau000010000um_M2000_1950': 1e-03,
+    'mfv_splitSUSY_tau000010000um_M2000_1980': 1e-03,
     'hists': 1,
+    'mltree': 1,
 }
 
 fns_xsec_EOY = {
@@ -266,6 +275,7 @@ def GetXsecList(fns):
     xsecs = []
     for fn in fns:
         nfn = fn[:fn.find('_',-7,-1)]
+        #nfn = fn
         assert(nfn in fns_xsec)
         xsecs.append(fns_xsec[nfn])
     return xsecs
@@ -304,7 +314,8 @@ def GetLoadFactor(fn,f,lumi):
     xsec = GetXsec(fn)
     return xsec*lumi/nevt
 
-def GetDataAndLabel(fns, split, isSignal, cut="", lumi=200000, maxsigevt=1000):
+def GetDataAndLabel(fns, split, isSignal, cut="", lumi=200000, maxsigevt=1000, isTrainData=False):
+    assert(not (isSignal and isTrainData))
     tk_train = []
     tk_val = []
     tk_test = []
@@ -314,7 +325,8 @@ def GetDataAndLabel(fns, split, isSignal, cut="", lumi=200000, maxsigevt=1000):
     for fn in fns:
         print("Loading sample {}...".format(fn))
         f = uproot.open(fndir+fn+'.root')
-        loadfactor = GetLoadFactor(fn, f, lumi)
+        if not isTrainData:
+          loadfactor = GetLoadFactor(fn, f, lumi)
         f = f["mfvJetTreer/tree_DV"]
         if len(f['evt'].array())==0:
           print( "no events!!!")
@@ -323,6 +335,10 @@ def GetDataAndLabel(fns, split, isSignal, cut="", lumi=200000, maxsigevt=1000):
         matrix = f.arrays(variables, namedecode="utf-8")
         # apply cuts
         evt_select = (matrix['metnomu_pt']>80) & (matrix['metnomu_pt']<=200) & (matrix['vtx_ntk']>2) & (matrix['vtx_dBVerr']<0.0025)
+        # blind signal region
+        if isTrainData:
+          evt_select = evt_select & (matrix['vtx_ntk']<5) 
+
         for v in matrix:
           matrix[v] = matrix[v][evt_select]
         if len(matrix['met_pt'])==0:
@@ -333,11 +349,15 @@ def GetDataAndLabel(fns, split, isSignal, cut="", lumi=200000, maxsigevt=1000):
         train_idx = -1
         val_idx = -1
         nevt_total = len(matrix['met_pt'])
-        nevt = int(loadfactor*nevt_total)
-        if nevt>nevt_total:
+        if not isTrainData:
+            nevt = int(loadfactor*nevt_total)
+            if nevt>nevt_total:
+                nevt = nevt_total
+            if isSignal:
+                nevt = min(nevt_total, maxsigevt)
+        if isTrainData:
             nevt = nevt_total
-        if isSignal:
-            nevt = min(nevt_total, maxsigevt)
+
         print("  {} events in file, {} are used".format(nevt_total, nevt))
             
         train_idx = int(nevt*split[0])
@@ -405,31 +425,46 @@ def importData(split,year,isMC,normalize=True,shuffle=True,maxsigevt=1000):
     returns data_train/val/test, which are tuples, structure:
       (data, ntk, label, met, data_no_normalized)
     '''
-    fn_s = fns_signal.copy()
-    for fi in range(len(fn_s)):
-      fn_s[fi] += year
-    fn_b = fns_bkg.copy()
-    for fi in range(len(fn_b)):
-      fn_b[fi] += year
-    train_sig, val_sig, test_sig = GetDataAndLabel(fn_s, split, True, maxsigevt=maxsigevt)
-    train_bkg, val_bkg, test_bkg = GetDataAndLabel(fn_b, split, False, maxsigevt=maxsigevt)
-    train_sig = removeNaN(train_sig)
-    val_sig = removeNaN(val_sig)
-    test_sig = removeNaN(test_sig)
-    print(train_bkg[0].shape)
-    train_bkg = removeNaN(train_bkg)
-    val_bkg = removeNaN(val_bkg)
-    test_bkg = removeNaN(test_bkg)
-    #sig_bkg_weight = float(len(train_bkg[0]))/len(train_sig[0])
-    print("Training data: {0} signals {1} backgrounds".format(len(train_sig[0]), len(train_bkg[0])))
-    nitems = len(train_sig)
-    data_train = [None]*(nitems)
-    data_val = [None]*(nitems)
-    data_test = [None]*(nitems)
-    for i in range(nitems):
-        data_train[i] = np.concatenate([train_sig[i], train_bkg[i]])
-        data_val[i] = np.concatenate([val_sig[i], val_bkg[i]])
-        data_test[i] = np.concatenate([test_sig[i], test_bkg[i]])
+    if not isMC:
+      fn_d = fns_data[year]
+      train_dat, val_dat, test_dat = GetDataAndLabel(fn_d, split, False, maxsigevt=maxsigevt, isTrainData=True)
+      train_dat = removeNaN(train_dat)
+      val_dat = removeNaN(val_dat)
+      test_dat = removeNaN(test_dat)
+      print("Training REAL data: {0} events as background".format(len(train_dat[0])))
+      nitems = len(train_dat)
+      data_train = [None]*(nitems)
+      data_val = [None]*(nitems)
+      data_test = [None]*(nitems)
+      for i in range(nitems):
+          data_train[i] = np.concatenate([train_dat[i]])
+          data_val[i] = np.concatenate([val_dat[i]])
+          data_test[i] = np.concatenate([test_dat[i]])
+    elif isMC:
+      fn_s = fns_signal.copy()
+      for fi in range(len(fn_s)):
+        fn_s[fi] += year
+      fn_b = fns_bkg.copy()
+      for fi in range(len(fn_b)):
+        fn_b[fi] += year
+      train_sig, val_sig, test_sig = GetDataAndLabel(fn_s, split, True, maxsigevt=maxsigevt, isTrainData=False)
+      train_bkg, val_bkg, test_bkg = GetDataAndLabel(fn_b, split, False, maxsigevt=maxsigevt, isTrainData=False)
+      train_sig = removeNaN(train_sig)
+      val_sig = removeNaN(val_sig)
+      test_sig = removeNaN(test_sig)
+      train_bkg = removeNaN(train_bkg)
+      val_bkg = removeNaN(val_bkg)
+      test_bkg = removeNaN(test_bkg)
+      #sig_bkg_weight = float(len(train_bkg[0]))/len(train_sig[0])
+      print("Training MC data: {0} signals {1} backgrounds".format(len(train_sig[0]), len(train_bkg[0])))
+      nitems = len(train_sig)
+      data_train = [None]*(nitems)
+      data_val = [None]*(nitems)
+      data_test = [None]*(nitems)
+      for i in range(nitems):
+          data_train[i] = np.concatenate([train_sig[i], train_bkg[i]])
+          data_val[i] = np.concatenate([val_sig[i], val_bkg[i]])
+          data_test[i] = np.concatenate([test_sig[i], test_bkg[i]])
     
     
     if shuffle:
@@ -451,7 +486,14 @@ def importData(split,year,isMC,normalize=True,shuffle=True,maxsigevt=1000):
         data_val[i] = normalizedata(data_val[i], year, isMC)
         data_test[i] = normalizedata(data_test[i], year, isMC)
     
-    return data_train, data_val, data_test, (len(train_sig[0]), len(train_bkg[0]))
+    if isMC:
+      num_sig = len(train_sig[0])
+      num_bkg = len(train_bkg[0])
+    else:
+      num_sig = 0
+      num_bkg = len(train_dat[0])
+
+    return data_train, data_val, data_test, (num_sig, num_bkg)
 
 def zeropadding(matrix, l):
     '''

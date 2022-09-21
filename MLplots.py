@@ -25,27 +25,24 @@ METNoMu_avai = True
 B_info = True
 doSignal = False
 doBackground = True
-doData = True
-TrackMover = False
+doBackgroundSeperate = True
+doData = False
+doDataSeperate = True
+TrackMover = True
 #assert(not (doData and (doBackground or doSignal)))
-year = "2018"
+year = sys.argv[1]
 int_lumi = 59683.0 if year=="2018" else 40610.0 if year=="2017" else 19664.0 if year=="20161" else 16978.0 if year=="20162" else 0.0
-fndir_plot = '/uscms/home/ali/nobackup/LLP/crabdir/MLTree_new_ULV13METm/'
-#fndir_plot = '/uscms/home/ali/nobackup/LLP/crabdir/MLTreeULV11METm/'
-#fndir_plot = '/uscms/home/ali/nobackup/LLP/crabdir/MLTree_prefiringweight_ULV13METm/'
-#fndir_plot = '/uscms/home/ali/nobackup/LLP/crabdir/MLTree_loosedBVerr_ULV11METm/'
-#fndir_plot = '/uscms/home/ali/nobackup/LLP/crabdir/MLTree_nofakeMETveto_ULV11METm/'
-#fndir_plot = '/uscms/home/ali/nobackup/LLP/crabdir/MLTree_fakeMETveto_ULV11_20161METm/'
-#fndir_plot = '/uscms/home/ali/nobackup/LLP/crabdir/MLTreeULV12_nstl6_20162METm/'
-#fndir_plot = '/uscms/home/ali/nobackup/LLP/crabdir/MLTree_loosedBVerr_ULV11_2018METm/'
-#fndir_plot = '/uscms/home/ali/nobackup/LLP/crabdir/MLTree_tightbtkw_ULV11METm/'
+fndir_plot = '/uscms/home/ali/nobackup/LLP/crabdir/MLTree_noHTveto_ULV13METm/'
+#fndir_plot = '/uscms/home/ali/nobackup/LLP/crabdir/MLTree_noHTveto_ULV13_othersigMETm/'
 if TrackMover:
-  fndir_plot = '/uscms/home/ali/nobackup/LLP/CornellCode/mfv_10_6_29/src/JMTucker/MFVNeutralino/test/TrackMover/TestRun/'
-#m_path = './model_0407_ntk_ULV11_2/'
+  fndir_plot = '/uscms/home/ali/nobackup/LLP/crabdir/TrackMoverMLTreeULV13metmv4_20_tau010000um_v2/'
+#if TrackMover:
+#  fndir_plot = '/uscms/home/ali/nobackup/LLP/CornellCode/mfv_10_6_29/src/JMTucker/MFVNeutralino/test/TrackMover/TestRun/'
 #m_path = './model_0725_ntk_ULV13/'
-m_path = './model_0727_ntk_ULV13/'
-save_plot_path='./UL0727_ULV13_ntk_RunII/'
-#save_plot_path='./UL0725_ULV11_ntk_WHtest/'
+m_path = './model_0801_ntk_ULV13/'
+#save_plot_path='./UL0801_ULV13_ntk_RunII_noHTveto/'
+save_plot_path='./UL0801_ULV13_ntk_RunII_noHTveto_trackmover/'
+#save_plot_path='./UL0730_ULV13_ntk_RunII/'
 if not os.path.exists(save_plot_path):
       os.makedirs(save_plot_path)
 
@@ -94,6 +91,7 @@ def GetData(fns, variables, isMC, cut=""):
         phys = f.arrays(variables, namedecode="utf-8")
         del f
         evt_select = (phys['vtx_ntk']>0) & (phys['metnomu_pt']>=200) & (phys['vtx_dBVerr']<0.0025)  #dBVerr cut was 0.0025
+        #evt_select = (phys['vtx_ntk']>0) & (phys['metnomu_pt']>=0) & (phys['vtx_dBVerr']<0.0025)  #dBVerr cut was 0.0025
         #evt_select = (phys['vtx_ntk']>0) & (phys['metnomu_pt']>=100) & (phys['metnomu_pt']<200) & (phys['vtx_dBVerr']<0.0025)
         for v in phys:
           phys[v] = np.array(phys[v][evt_select])
@@ -435,11 +433,22 @@ def main():
       "st_tw_top_"+year,
       "ttbar_"+year,
     ]
+    if TrackMover:
+      fns += [
+        #"qcdht0100_"+year,
+        #"qcdht0200_"+year,
+        #"qcdht0300_"+year,
+        "wjetstolnuht0100_"+year,
+        "zjetstonunuht0100_"+year,
+      ]
     if doBackground:
       #makeplotfile(fns,"background_METtrigger",False)
-      makeplotfile(fns,"background_METtrigger_"+year,False,False,0.4,0.4)
-      #for bkg_fn in fns:
-      #  makeplotfile([bkg_fn],bkg_fn+"_lowMET_bquark",False)
+      #makeplotfile(fns,"background_METtrigger_"+year,False,False,0.2,0.2)
+      if doBackgroundSeperate:
+        for bkg_fn in fns:
+          makeplotfile([bkg_fn],bkg_fn+"_METtrigger_"+year,False,False,0.2,0.2)
+      else: 
+        makeplotfile(fns,"background_METtrigger_"+year,False,False,0.2,0.2)
 
     sig_fns = [
                #'mfv_splitSUSY_tau000000100um_M2000_1800_'+year,
@@ -470,137 +479,147 @@ def main():
                #'mfv_splitSUSY_tau001000000um_M2000_1900_'+year,
                #'mfv_splitSUSY_tau010000000um_M2000_1800_'+year,
                #'mfv_splitSUSY_tau010000000um_M2000_1900_'+year,
+              #'mfv_neu_tau000100um_M0400_'+year,
+              #'mfv_neu_tau001000um_M0400_'+year,
+              #'mfv_neu_tau010000um_M0400_'+year,
+              #'mfv_neu_tau000100um_M1600_'+year,
+              #'mfv_neu_tau001000um_M1600_'+year,
+              #'mfv_neu_tau010000um_M1600_'+year,
 
-               #"mfv_splitSUSY_tau000000100um_M1400_1200_"+year,
-               #"mfv_splitSUSY_tau000000100um_M1400_1300_"+year,
-               #"mfv_splitSUSY_tau000000100um_M1600_1400_"+year,
-               #"mfv_splitSUSY_tau000000100um_M1600_1500_"+year,
-               #"mfv_splitSUSY_tau000000100um_M1800_1600_"+year,
-               #"mfv_splitSUSY_tau000000100um_M1800_1700_"+year,
+               "mfv_splitSUSY_tau000000100um_M1400_1200_"+year,
+               "mfv_splitSUSY_tau000000100um_M1400_1300_"+year,
+               "mfv_splitSUSY_tau000000100um_M1600_1400_"+year,
+               "mfv_splitSUSY_tau000000100um_M1600_1500_"+year,
+               "mfv_splitSUSY_tau000000100um_M1800_1600_"+year,
+               "mfv_splitSUSY_tau000000100um_M1800_1700_"+year,
                "mfv_splitSUSY_tau000000100um_M2000_1800_"+year,
                "mfv_splitSUSY_tau000000100um_M2000_1900_"+year,
-               #"mfv_splitSUSY_tau000000100um_M2200_2000_"+year,
-               #"mfv_splitSUSY_tau000000100um_M2200_2100_"+year,
-               #"mfv_splitSUSY_tau000000100um_M2400_2200_"+year,
-               #"mfv_splitSUSY_tau000000100um_M2400_2300_"+year,
-               #"mfv_splitSUSY_tau000000100um_M2600_2400_"+year,
-               #"mfv_splitSUSY_tau000000100um_M2600_2500_"+year,
-               #"mfv_splitSUSY_tau000000300um_M1400_1200_"+year,
-               #"mfv_splitSUSY_tau000000300um_M1400_1300_"+year,
-               #"mfv_splitSUSY_tau000000300um_M1600_1400_"+year,
-               #"mfv_splitSUSY_tau000000300um_M1600_1500_"+year,
+               "mfv_splitSUSY_tau000000100um_M2200_2000_"+year,
+               "mfv_splitSUSY_tau000000100um_M2200_2100_"+year,
+               "mfv_splitSUSY_tau000000100um_M2400_2200_"+year,
+               "mfv_splitSUSY_tau000000100um_M2400_2300_"+year,
+               "mfv_splitSUSY_tau000000100um_M2600_2400_"+year,
+               "mfv_splitSUSY_tau000000100um_M2600_2500_"+year,
+               "mfv_splitSUSY_tau000000300um_M1400_1200_"+year,
+               "mfv_splitSUSY_tau000000300um_M1400_1300_"+year,
+               "mfv_splitSUSY_tau000000300um_M1600_1400_"+year,
+               "mfv_splitSUSY_tau000000300um_M1600_1500_"+year,
                #"mfv_splitSUSY_tau000000300um_M1800_1600_"+year,
-               #"mfv_splitSUSY_tau000000300um_M1800_1700_"+year,
+               "mfv_splitSUSY_tau000000300um_M1800_1700_"+year,
                "mfv_splitSUSY_tau000000300um_M2000_1800_"+year,
                "mfv_splitSUSY_tau000000300um_M2000_1900_"+year,
-               #"mfv_splitSUSY_tau000000300um_M2200_2000_"+year,
-               #"mfv_splitSUSY_tau000000300um_M2200_2100_"+year,
-               #"mfv_splitSUSY_tau000000300um_M2400_2200_"+year,
-               #"mfv_splitSUSY_tau000000300um_M2400_2300_"+year,
-               #"mfv_splitSUSY_tau000000300um_M2600_2400_"+year,
-               #"mfv_splitSUSY_tau000000300um_M2600_2500_"+year,
-               #"mfv_splitSUSY_tau000001000um_M1400_1200_"+year,
-               #"mfv_splitSUSY_tau000001000um_M1400_1300_"+year,
-               #"mfv_splitSUSY_tau000001000um_M1600_1400_"+year,
-               #"mfv_splitSUSY_tau000001000um_M1600_1500_"+year,
-               #"mfv_splitSUSY_tau000001000um_M1800_1600_"+year,
-               #"mfv_splitSUSY_tau000001000um_M1800_1700_"+year,
+               "mfv_splitSUSY_tau000000300um_M2200_2000_"+year,
+               "mfv_splitSUSY_tau000000300um_M2200_2100_"+year,
+               "mfv_splitSUSY_tau000000300um_M2400_2200_"+year,
+               "mfv_splitSUSY_tau000000300um_M2400_2300_"+year,
+               "mfv_splitSUSY_tau000000300um_M2600_2400_"+year,
+               "mfv_splitSUSY_tau000000300um_M2600_2500_"+year,
+               "mfv_splitSUSY_tau000001000um_M1400_1200_"+year,
+               "mfv_splitSUSY_tau000001000um_M1400_1300_"+year,
+               "mfv_splitSUSY_tau000001000um_M1600_1400_"+year,
+               "mfv_splitSUSY_tau000001000um_M1600_1500_"+year,
+               "mfv_splitSUSY_tau000001000um_M1800_1600_"+year,
+               "mfv_splitSUSY_tau000001000um_M1800_1700_"+year,
                "mfv_splitSUSY_tau000001000um_M2000_1800_"+year,
                "mfv_splitSUSY_tau000001000um_M2000_1900_"+year,
-               #"mfv_splitSUSY_tau000001000um_M2200_2000_"+year,
-               #"mfv_splitSUSY_tau000001000um_M2200_2100_"+year,
-               #"mfv_splitSUSY_tau000001000um_M2400_2200_"+year,
-               #"mfv_splitSUSY_tau000001000um_M2400_2300_"+year,
-               #"mfv_splitSUSY_tau000001000um_M2600_2400_"+year,
-               #"mfv_splitSUSY_tau000001000um_M2600_2500_"+year,
-               #"mfv_splitSUSY_tau000003000um_M1400_1200_"+year,
-               #"mfv_splitSUSY_tau000003000um_M1400_1300_"+year,
-               #"mfv_splitSUSY_tau000003000um_M1600_1400_"+year,
-               #"mfv_splitSUSY_tau000003000um_M1600_1500_"+year,
-               #"mfv_splitSUSY_tau000003000um_M1800_1600_"+year,
-               #"mfv_splitSUSY_tau000003000um_M1800_1700_"+year,
+               "mfv_splitSUSY_tau000001000um_M2200_2000_"+year,
+               "mfv_splitSUSY_tau000001000um_M2200_2100_"+year,
+               "mfv_splitSUSY_tau000001000um_M2400_2200_"+year,
+               "mfv_splitSUSY_tau000001000um_M2400_2300_"+year,
+               "mfv_splitSUSY_tau000001000um_M2600_2400_"+year,
+               "mfv_splitSUSY_tau000001000um_M2600_2500_"+year,
+               "mfv_splitSUSY_tau000003000um_M1400_1200_"+year,
+               "mfv_splitSUSY_tau000003000um_M1400_1300_"+year,
+               "mfv_splitSUSY_tau000003000um_M1600_1400_"+year,
+               "mfv_splitSUSY_tau000003000um_M1600_1500_"+year,
+               "mfv_splitSUSY_tau000003000um_M1800_1600_"+year,
+               "mfv_splitSUSY_tau000003000um_M1800_1700_"+year,
                "mfv_splitSUSY_tau000003000um_M2000_1800_"+year,
                "mfv_splitSUSY_tau000003000um_M2000_1900_"+year,
-               #"mfv_splitSUSY_tau000003000um_M2200_2000_"+year,
-               #"mfv_splitSUSY_tau000003000um_M2200_2100_"+year,
-               #"mfv_splitSUSY_tau000003000um_M2400_2200_"+year,
-               #"mfv_splitSUSY_tau000003000um_M2400_2300_"+year,
-               #"mfv_splitSUSY_tau000003000um_M2600_2400_"+year,
-               #"mfv_splitSUSY_tau000003000um_M2600_2500_"+year,
-               #"mfv_splitSUSY_tau000010000um_M1400_1200_"+year,
-               #"mfv_splitSUSY_tau000010000um_M1400_1300_"+year,
-               #"mfv_splitSUSY_tau000010000um_M1600_1400_"+year,
-               #"mfv_splitSUSY_tau000010000um_M1600_1500_"+year,
-               #"mfv_splitSUSY_tau000010000um_M1800_1600_"+year,
-               #"mfv_splitSUSY_tau000010000um_M1800_1700_"+year,
+               "mfv_splitSUSY_tau000003000um_M2200_2000_"+year,
+               "mfv_splitSUSY_tau000003000um_M2200_2100_"+year,
+               "mfv_splitSUSY_tau000003000um_M2400_2200_"+year,
+               "mfv_splitSUSY_tau000003000um_M2400_2300_"+year,
+               "mfv_splitSUSY_tau000003000um_M2600_2400_"+year,
+               "mfv_splitSUSY_tau000003000um_M2600_2500_"+year,
+               "mfv_splitSUSY_tau000010000um_M1400_1200_"+year,
+               "mfv_splitSUSY_tau000010000um_M1400_1300_"+year,
+               "mfv_splitSUSY_tau000010000um_M1600_1400_"+year,
+               "mfv_splitSUSY_tau000010000um_M1600_1500_"+year,
+               "mfv_splitSUSY_tau000010000um_M1800_1600_"+year,
+               "mfv_splitSUSY_tau000010000um_M1800_1700_"+year,
                "mfv_splitSUSY_tau000010000um_M2000_1800_"+year,
                "mfv_splitSUSY_tau000010000um_M2000_1900_"+year,
-               #"mfv_splitSUSY_tau000010000um_M2200_2000_"+year,
-               #"mfv_splitSUSY_tau000010000um_M2200_2100_"+year,
-               #"mfv_splitSUSY_tau000010000um_M2400_2200_"+year,
-               #"mfv_splitSUSY_tau000010000um_M2400_2300_"+year,
-               #"mfv_splitSUSY_tau000010000um_M2600_2400_"+year,
-               #"mfv_splitSUSY_tau000010000um_M2600_2500_"+year,
-               #"mfv_splitSUSY_tau000030000um_M1400_1200_"+year,
-               #"mfv_splitSUSY_tau000030000um_M1400_1300_"+year,
-               #"mfv_splitSUSY_tau000030000um_M1600_1400_"+year,
-               #"mfv_splitSUSY_tau000030000um_M1600_1500_"+year,
-               #"mfv_splitSUSY_tau000030000um_M1800_1600_"+year,
-               #"mfv_splitSUSY_tau000030000um_M1800_1700_"+year,
+               "mfv_splitSUSY_tau000010000um_M2200_2000_"+year,
+               "mfv_splitSUSY_tau000010000um_M2200_2100_"+year,
+               "mfv_splitSUSY_tau000010000um_M2400_2200_"+year,
+               "mfv_splitSUSY_tau000010000um_M2400_2300_"+year,
+               "mfv_splitSUSY_tau000010000um_M2600_2400_"+year,
+               "mfv_splitSUSY_tau000010000um_M2600_2500_"+year,
+               "mfv_splitSUSY_tau000030000um_M1400_1200_"+year,
+               "mfv_splitSUSY_tau000030000um_M1400_1300_"+year,
+               "mfv_splitSUSY_tau000030000um_M1600_1400_"+year,
+               "mfv_splitSUSY_tau000030000um_M1600_1500_"+year,
+               "mfv_splitSUSY_tau000030000um_M1800_1600_"+year,
+               "mfv_splitSUSY_tau000030000um_M1800_1700_"+year,
                "mfv_splitSUSY_tau000030000um_M2000_1800_"+year,
                "mfv_splitSUSY_tau000030000um_M2000_1900_"+year,
-               #"mfv_splitSUSY_tau000030000um_M2200_2000_"+year,
-               #"mfv_splitSUSY_tau000030000um_M2200_2100_"+year,
-               #"mfv_splitSUSY_tau000030000um_M2400_2200_"+year,
-               #"mfv_splitSUSY_tau000030000um_M2400_2300_"+year,
-               #"mfv_splitSUSY_tau000030000um_M2600_2400_"+year,
-               #"mfv_splitSUSY_tau000030000um_M2600_2500_"+year,
-               #"mfv_splitSUSY_tau000100000um_M1400_1200_"+year,
-               #"mfv_splitSUSY_tau000100000um_M1400_1300_"+year,
-               #"mfv_splitSUSY_tau000100000um_M1600_1400_"+year,
-               #"mfv_splitSUSY_tau000100000um_M1600_1500_"+year,
-               #"mfv_splitSUSY_tau000100000um_M1800_1600_"+year,
-               #"mfv_splitSUSY_tau000100000um_M1800_1700_"+year,
+               "mfv_splitSUSY_tau000030000um_M2200_2000_"+year,
+               "mfv_splitSUSY_tau000030000um_M2200_2100_"+year,
+               "mfv_splitSUSY_tau000030000um_M2400_2200_"+year,
+               "mfv_splitSUSY_tau000030000um_M2400_2300_"+year,
+               "mfv_splitSUSY_tau000030000um_M2600_2400_"+year,
+               "mfv_splitSUSY_tau000030000um_M2600_2500_"+year,
+               "mfv_splitSUSY_tau000100000um_M1400_1200_"+year,
+               "mfv_splitSUSY_tau000100000um_M1400_1300_"+year,
+               "mfv_splitSUSY_tau000100000um_M1600_1400_"+year,
+               "mfv_splitSUSY_tau000100000um_M1600_1500_"+year,
+               "mfv_splitSUSY_tau000100000um_M1800_1600_"+year,
+               "mfv_splitSUSY_tau000100000um_M1800_1700_"+year,
                "mfv_splitSUSY_tau000100000um_M2000_1800_"+year,
                "mfv_splitSUSY_tau000100000um_M2000_1900_"+year,
-               #"mfv_splitSUSY_tau000100000um_M2200_2000_"+year,
-               #"mfv_splitSUSY_tau000100000um_M2200_2100_"+year,
-               #"mfv_splitSUSY_tau000100000um_M2400_2200_"+year,
-               #"mfv_splitSUSY_tau000100000um_M2400_2300_"+year,
-               #"mfv_splitSUSY_tau000100000um_M2600_2400_"+year,
-               #"mfv_splitSUSY_tau000100000um_M2600_2500_"+year,
-               #"mfv_splitSUSY_tau000300000um_M1400_1200_"+year,
-               #"mfv_splitSUSY_tau000300000um_M1400_1300_"+year,
-               #"mfv_splitSUSY_tau000300000um_M1600_1400_"+year,
-               #"mfv_splitSUSY_tau000300000um_M1600_1500_"+year,
-               #"mfv_splitSUSY_tau000300000um_M1800_1600_"+year,
-               #"mfv_splitSUSY_tau000300000um_M1800_1700_"+year,
+               "mfv_splitSUSY_tau000100000um_M2200_2000_"+year,
+               "mfv_splitSUSY_tau000100000um_M2200_2100_"+year,
+               "mfv_splitSUSY_tau000100000um_M2400_2200_"+year,
+               "mfv_splitSUSY_tau000100000um_M2400_2300_"+year,
+               "mfv_splitSUSY_tau000100000um_M2600_2400_"+year,
+               "mfv_splitSUSY_tau000100000um_M2600_2500_"+year,
+               "mfv_splitSUSY_tau000300000um_M1400_1200_"+year,
+               "mfv_splitSUSY_tau000300000um_M1400_1300_"+year,
+               "mfv_splitSUSY_tau000300000um_M1600_1400_"+year,
+               "mfv_splitSUSY_tau000300000um_M1600_1500_"+year,
+               "mfv_splitSUSY_tau000300000um_M1800_1600_"+year,
+               "mfv_splitSUSY_tau000300000um_M1800_1700_"+year,
                "mfv_splitSUSY_tau000300000um_M2000_1800_"+year,
                "mfv_splitSUSY_tau000300000um_M2000_1900_"+year,
-               #"mfv_splitSUSY_tau000300000um_M2200_2000_"+year,
-               #"mfv_splitSUSY_tau000300000um_M2200_2100_"+year,
-               #"mfv_splitSUSY_tau000300000um_M2400_2200_"+year,
-               #"mfv_splitSUSY_tau000300000um_M2400_2300_"+year,
-               #"mfv_splitSUSY_tau000300000um_M2600_2400_"+year,
-               #"mfv_splitSUSY_tau000300000um_M2600_2500_"+year,
-               #"mfv_splitSUSY_tau001000000um_M1400_1200_"+year,
-               #"mfv_splitSUSY_tau001000000um_M1400_1300_"+year,
-               #"mfv_splitSUSY_tau001000000um_M1600_1400_"+year,
-               #"mfv_splitSUSY_tau001000000um_M1600_1500_"+year,
-               #"mfv_splitSUSY_tau001000000um_M1800_1600_"+year,
-               #"mfv_splitSUSY_tau001000000um_M1800_1700_"+year,
+               "mfv_splitSUSY_tau000300000um_M2200_2000_"+year,
+               "mfv_splitSUSY_tau000300000um_M2200_2100_"+year,
+               "mfv_splitSUSY_tau000300000um_M2400_2200_"+year,
+               "mfv_splitSUSY_tau000300000um_M2400_2300_"+year,
+               "mfv_splitSUSY_tau000300000um_M2600_2400_"+year,
+               "mfv_splitSUSY_tau000300000um_M2600_2500_"+year,
+               "mfv_splitSUSY_tau001000000um_M1400_1200_"+year,
+               "mfv_splitSUSY_tau001000000um_M1400_1300_"+year,
+               "mfv_splitSUSY_tau001000000um_M1600_1400_"+year,
+               "mfv_splitSUSY_tau001000000um_M1600_1500_"+year,
+               "mfv_splitSUSY_tau001000000um_M1800_1600_"+year,
+               "mfv_splitSUSY_tau001000000um_M1800_1700_"+year,
                "mfv_splitSUSY_tau001000000um_M2000_1800_"+year,
                "mfv_splitSUSY_tau001000000um_M2000_1900_"+year,
-               #"mfv_splitSUSY_tau001000000um_M2200_2000_"+year,
-               #"mfv_splitSUSY_tau001000000um_M2200_2100_"+year,
-               #"mfv_splitSUSY_tau001000000um_M2400_2200_"+year,
-               #"mfv_splitSUSY_tau001000000um_M2400_2300_"+year,
-               #"mfv_splitSUSY_tau001000000um_M2600_2400_"+year,
-               #"mfv_splitSUSY_tau001000000um_M2600_2500_"+year,
+               "mfv_splitSUSY_tau001000000um_M2200_2000_"+year,
+               "mfv_splitSUSY_tau001000000um_M2200_2100_"+year,
+               "mfv_splitSUSY_tau001000000um_M2400_2200_"+year,
+               "mfv_splitSUSY_tau001000000um_M2400_2300_"+year,
+               "mfv_splitSUSY_tau001000000um_M2600_2400_"+year,
+               "mfv_splitSUSY_tau001000000um_M2600_2500_"+year,
               ]
+    sig_fns = [
+               "mfv_splitSUSY_tau000010000um_M2000_1950_"+year,
+               "mfv_splitSUSY_tau000010000um_M2000_1980_"+year,
+    ]
     if doSignal:
       for sig_fn in sig_fns:
-        makeplotfile([sig_fn],sig_fn+"_METtrigger",True,False,0.4,0.4)
+        makeplotfile([sig_fn],sig_fn+"_METtrigger",True,False,0.2,0.2)
     fns_data = []
     if year=='2017':
       fns_data = [
@@ -632,13 +651,17 @@ def main():
         'MET20162H',
       ]
     if doData:
-      makeplotfile(fns_data,"data_METtrigger_"+year,False,True,0.4,0.4)
+      if doDataSeperate:
+        for data_fn in fns_data:
+          makeplotfile([data_fn], data_fn+"_METtrigger_"+year,False,True,0.2,0.2)
+      else:
+        makeplotfile(fns_data,"data_METtrigger_"+year,False,True,0.2,0.2)
 
-    fns_tm = [
-      'hists',
-    ]
-    if TrackMover:
-      makeplotfile(fns_tm,"hists",False,False,0.4,0.4)
+    #fns_tm = [
+    #  'mltree',
+    #]
+    #if TrackMover:
+    #  makeplotfile(fns_tm,"mltree",False,False,0.2,0.2)
 
 main()
 

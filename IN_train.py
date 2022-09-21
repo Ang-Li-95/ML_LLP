@@ -239,20 +239,28 @@ for year in years:
       maxsigevt = 250
     else:
       maxsigevt = 500
-    train_year, val_year, test_year, nevts_year = importData([0.7,0.15,0.15], year, True, True, True, maxsigevt=maxsigevt)
+    train_year, val_year, test_year, nevts_year = importData([0.8,0.15,0.05], year, True, True, True, maxsigevt=maxsigevt)
     train_total.append(train_year)
     val_total.append(val_year)
     test_total.append(test_year)
     nevt_sig += nevts_year[0]
     nevt_bkg += nevts_year[1]
+    if includeData:
+      train_data_year, val_data_year, test_data_year, nevts_data_year = importData([0.8,0.15,0.05], year, False, True, True, maxsigevt=maxsigevt)
+      train_total.append(train_data_year)
+      val_total.append(val_data_year)
+      test_total.append(test_data_year)
+      nevt_sig += nevts_data_year[0]
+      nevt_bkg += nevts_data_year[1]
+
 nitems = len(train_total[0])
 train = [None]*(nitems)
 val = [None]*(nitems)
 test = [None]*(nitems)
 for i in range(nitems):
-    train_tot = np.concatenate([train_total[j][i] for j in range(len(years))])
-    val_tot = np.concatenate([val_total[j][i] for j in range(len(years))])
-    test_tot = np.concatenate([train_total[j][i] for j in range(len(years))])
+    train_tot = np.concatenate([train_total[j][i] for j in range(len(train_total))])
+    val_tot = np.concatenate([val_total[j][i] for j in range(len(train_total))])
+    test_tot = np.concatenate([train_total[j][i] for j in range(len(train_total))])
     train[i] = train_tot
     val[i] = val_tot
     test[i] = test_tot
@@ -263,7 +271,7 @@ for d in [train, val, test]:
         d[i] = d[i][shuffler]
 
 pos_weight = float(nevt_bkg) / nevt_sig
-print("Ttotal number of Signal {}, total number of background {}. Training weight {}.".format(nevt_sig, nevt_bkg, pos_weight))
+print("Total number of Signal {}, total number of background {}. Training weight {}.".format(nevt_sig, nevt_bkg, pos_weight))
 
 
 #def train():
@@ -348,7 +356,7 @@ min_loss = 100
 for i in range(num_epochs):
     lambda_dcorr_epoch = 0
     if i>=10:
-      lambda_dcorr_epoch = 0.8
+      lambda_dcorr_epoch = 0.65
     if i==num_epochs_tk:
       print("training on Vertices info")
     loss_train = 0

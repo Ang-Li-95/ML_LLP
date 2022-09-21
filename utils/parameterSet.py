@@ -206,12 +206,13 @@ Dv_ori = len(mlvar_vtx)
 Dr = 1
 De = 20
 #lambda_dcorr = 0.5
-lambda_param = 0.0003 # was 0.005
+lambda_param = 0.00005 # was 0.005
 lambda_dcorr_met = 0
 lr = 0.0003
 use_dR = False
 num_epochs=250
 
+includeData = True
 isUL = True
 #fndir = "/uscms/home/ali/nobackup/LLP/crabdir/MLTreeULV4_norefit_keeptkMETm/"
 #fndir = "root://cmseos.fnal.gov//store/user/ali/MLTree_trackdxysig0p5_ULV4_norefit_keeptkMETm/"
@@ -219,7 +220,7 @@ isUL = True
 #fndir = "/uscms/home/ali/nobackup/LLP/crabdir/MLTreeULV11METm/"
 #fndir = "/uscms/home/ali/nobackup/LLP/crabdir/MLTree_nofakeMETveto_ULV11METm/"
 fndir = "/uscms/home/ali/nobackup/LLP/crabdir/MLTree_new_ULV13METm/"
-dir_model = "./model_0728_ntk_ULV13/"
+dir_model = "./model_0801_ntk_ULV13/"
 
 #fns_bkg = [
 #    "qcdht0200_2017",
@@ -250,6 +251,33 @@ dir_model = "./model_0728_ntk_ULV13/"
 #    "mfv_splitSUSY_tau000010000um_M2000_1900_2017",
 #]
 
+fns_data = {
+  "20161": [
+        'MET20161B2',
+        'MET20161C',
+        'MET20161D',
+        'MET20161E',
+        'MET20161F',
+  ],
+  "20162": [
+        'MET20162F',
+        'MET20162G',
+        'MET20162H',
+  ],
+  "2017": [
+        'MET2017B',
+        'MET2017C',
+        'MET2017D',
+        'MET2017E',
+        'MET2017F',
+  ],
+  "2018": [
+        'MET2018A',
+        'MET2018B',
+        'MET2018C',
+        'MET2018D',
+  ],
+}
 fns_bkg = [
     "qcdht0100_",
     "qcdht0200_",
